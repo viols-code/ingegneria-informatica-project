@@ -19,6 +19,7 @@ ppdb.df['ATOM'] = ppdb.df['ATOM'][ppdb.df['ATOM']['element_symbol'] != 'H']
 atoms = atoms.filter(['x_coord','y_coord','z_coord','element_symbol'])
 #print(atoms.head(3217))
 
+
 #ppdb.to_pdb(path='./3eiy_stripped.pdb',
  #           records=['ATOM'],
   #          gz=False,

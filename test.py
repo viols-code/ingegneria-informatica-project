@@ -1,8 +1,9 @@
-from biopandas.pdb import PandasPdb
-import numpy as np
 import math
+import numpy as np
 import pandas as pd
+from biopandas.pdb import PandasPdb
 from pandas import DataFrame
+
 
 # inizializzo i raggi dei vari atomi
 raggio = {
@@ -16,7 +17,7 @@ raggio = {
 
 def lettura_file():
     # chiedo all'utente di inserire il path del file pdb
-    print('Inserisci il path del file pdb')
+    print('Inserisci il path del file pdb: ')
     path = input()
     # leggo il file pdb
     ppdb: PandasPdb = PandasPdb().read_pdb(path)
@@ -95,12 +96,28 @@ def fromdataframe_topdb(list1):
     return ppdb
 
 
+
+
+
+
+
+
+
+
+
+
+
 ppdb1 = lettura_file()
 ppdb1 = eliminazione_idrogeni(ppdb1)
 
 matrice = inizializzazione_matrice(ppdb1)
 
 griglia = inizializzazione_griglia(matrice)
+
+print('Inserisci il raggio della sfera: ')
+r = input()
+r = int(r)
+
 
 lista = creazione_lista_atomi(griglia)
 
@@ -110,3 +127,6 @@ ppdb2.to_pdb(path='./3eiy_stripped4.pdb',
              records=['ATOM'],
              gz=False,
              append_newline=True)
+
+
+
