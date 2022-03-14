@@ -77,6 +77,7 @@ def creazione_lista_atomi(grid):
                         ('ATOM', count, '', 'H', '', 'ILE', '', 'A', count, '', '', i - 50, j - 50, k - 50, 1.0, 0,
                          '', '', 'H', 0, count))
                     count += 1
+                    print(count)
 
     return list2
 
@@ -96,15 +97,24 @@ def fromdataframe_topdb(list1):
     return ppdb
 
 
+def confina(x, y, z, r, griglia):
+    for i in range(max(0, x - r), min(200, x + r + 1)):
+        for j in range(max(0, y - r), min(200, y + r + 1)):
+            for k in range(max(0, z - r), min(200, z + r + 1)):
+                if griglia[i][j][k] == 1:
+                    return 0
+
+    return 1
 
 
+def crea_bordo(griglia, r):
+    for i in range(200):
+        for j in range(200):
+            for k in range(200):
+                if confina(i, j, k, r, griglia):
+                    griglia[i][j][k] = -1
 
-
-
-
-
-
-
+    return griglia
 
 
 ppdb1 = lettura_file()
@@ -118,15 +128,13 @@ print('Inserisci il raggio della sfera: ')
 r = input()
 r = int(r)
 
+#griglia = crea_bordo(griglia, r)
 
 lista = creazione_lista_atomi(griglia)
 
 ppdb2 = fromdataframe_topdb(lista)
 
-ppdb2.to_pdb(path='./3eiy_stripped4.pdb',
+ppdb2.to_pdb(path='./3eiy_stripped.pdb',
              records=['ATOM'],
              gz=False,
              append_newline=True)
-
-
-
