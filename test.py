@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from biopandas.pdb import PandasPdb
 from pandas import DataFrame
+from numba import jit
 
 
 # inizializzo i raggi dei vari atomi
@@ -12,6 +13,7 @@ raggio = {
     'C': 1.7,
     'F': 1.8,
     'S': 1.8,
+    'H': 1
 }
 
 
@@ -49,7 +51,7 @@ def distanza3D(x1, x2, y1, y2, z1, z2):
 
 def inizializzazione_griglia(matrix):
     # creo una griglia di soli zeri
-    grid = np.zeros((200, 200, 200))
+    grid = np.zeros((150, 150, 150))
 
     # inserisco gli uni in posizione degli atomi
     # raggio[matrix[i][3]]
@@ -69,10 +71,10 @@ def inizializzazione_griglia(matrix):
 def creazione_lista_atomi(grid):
     list2 = []
     count = 1
-    for i in range(200):
-        for j in range(200):
-            for k in range(200):
-                if grid[i][j][k] == 1:
+    for i in range(150):
+        for j in range(150):
+            for k in range(150):
+                if grid[i][j][k] == 0:
                     list2.append(
                         ('ATOM', count, '', 'H', '', 'ILE', '', 'A', count, '', '', i - 50, j - 50, k - 50, 1.0, 0,
                          '', '', 'H', 0, count))
@@ -97,28 +99,39 @@ def fromdataframe_topdb(list1):
     return ppdb
 
 
+@jit(nopython=True)
 def confina(x, y, z, r, griglia):
-    for i in range(max(0, x - r), min(200, x + r + 1)):
-        for j in range(max(0, y - r), min(200, y + r + 1)):
-            for k in range(max(0, z - r), min(200, z + r + 1)):
+    for i in range(max(0, x - r), min(150, x + r)):
+        for j in range(max(0, y - r), min(150, y + r)):
+            for k in range(max(0, z - r), min(150, z + r)):
                 if griglia[i][j][k] == 1:
                     return 0
 
-    return 1
+    for i in range(max(0, x - r - 1), min(150, x + r + 1)):
+        for j in range(max(0, y - r - 1), min(150, y + r + 1)):
+            for k in range(max(0, z - r - 1), min(150, z + r + 1)):
+                if abs(i - x) >= r + 1 or abs(y - j) >= r + 1 or abs(z - k) >= r + 1:
+                    if griglia[i][j][k] == 1:
+                        return 1
+
+    return 0
 
 
+@jit(nopython=True)
 def crea_bordo(griglia, r):
-    for i in range(200):
-        for j in range(200):
-            for k in range(200):
+    for i in range(150):
+        for j in range(150):
+            for k in range(150):
                 if confina(i, j, k, r, griglia):
-                    griglia[i][j][k] = -1
-
+                    for t in range(max(0, i - r), min(150, i + r)):
+                        for v in range(max(0, j - r), min(150, j + r)):
+                            for u in range(max(0, k - r), min(150, k + r)):
+                                griglia[t][v][u] = -1
     return griglia
 
 
 ppdb1 = lettura_file()
-ppdb1 = eliminazione_idrogeni(ppdb1)
+#ppdb1 = eliminazione_idrogeni(ppdb1)
 
 matrice = inizializzazione_matrice(ppdb1)
 
@@ -128,7 +141,40 @@ print('Inserisci il raggio della sfera: ')
 r = input()
 r = int(r)
 
-#griglia = crea_bordo(griglia, r)
+griglia = crea_bordo(griglia, r)
+
+lista2 = [[0, 0, 0]]
+
+while lista2:
+    pass
+    x, y, z = lista2[-1]
+    del lista2[-1]
+    if x >= 149 or y >= 149 or z >= 149:
+        continue
+    if griglia[x][y][z] == 0:
+        griglia[x][y][z] = -2
+        lista2.append([x, y, z])
+    if griglia[x][y][z + 1] == 0:
+        griglia[x][y][z + 1] = -2
+        lista2.append([x, y, z + 1])
+    if griglia[x][y + 1][z] == 0:
+        griglia[x][y + 1][z] = -2
+        lista2.append([x, y + 1, z])
+    if griglia[x + 1][y][z] == 0:
+        griglia[x + 1][y][z] = -2
+        lista2.append([x + 1, y, z])
+    if griglia[x + 1][y + 1][z] == 0:
+        griglia[x + 1][y + 1][z] = -2
+        lista2.append([x + 1, y + 1, z])
+    if griglia[x + 1][y][z + 1] == 0:
+        griglia[x + 1][y][z + 1] = -2
+        lista2.append([x + 1, y, z + 1])
+    if griglia[x][y + 1][z + 1] == 0:
+        griglia[x][y + 1][z + 1] = -2
+        lista2.append([x, y + 1, z + 1])
+    if griglia[x + 1][y + 1][z + 1] == 0:
+        griglia[x + 1][y + 1][z + 1] = -2
+        lista2.append([x + 1, y + 1, z + 1])
 
 lista = creazione_lista_atomi(griglia)
 
