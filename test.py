@@ -143,44 +143,44 @@ r = int(r)
 
 griglia = crea_bordo(griglia, r)
 
-lista2 = [[0, 0, 0]]
+lista3 = [[0, 0, 0]]
 
-while lista2:
+while lista3:
     pass
-    x, y, z = lista2[-1]
-    del lista2[-1]
+    x, y, z = lista3[-1]
+    del lista3[-1]
     if x >= 149 or y >= 149 or z >= 149:
         continue
     if griglia[x][y][z] == 0:
         griglia[x][y][z] = -2
-        lista2.append([x, y, z])
+        lista3.append([x, y, z])
     if griglia[x][y][z + 1] == 0:
         griglia[x][y][z + 1] = -2
-        lista2.append([x, y, z + 1])
+        lista3.append([x, y, z + 1])
     if griglia[x][y + 1][z] == 0:
         griglia[x][y + 1][z] = -2
-        lista2.append([x, y + 1, z])
+        lista3.append([x, y + 1, z])
     if griglia[x + 1][y][z] == 0:
         griglia[x + 1][y][z] = -2
-        lista2.append([x + 1, y, z])
+        lista3.append([x + 1, y, z])
     if griglia[x + 1][y + 1][z] == 0:
         griglia[x + 1][y + 1][z] = -2
-        lista2.append([x + 1, y + 1, z])
+        lista3.append([x + 1, y + 1, z])
     if griglia[x + 1][y][z + 1] == 0:
         griglia[x + 1][y][z + 1] = -2
-        lista2.append([x + 1, y, z + 1])
+        lista3.append([x + 1, y, z + 1])
     if griglia[x][y + 1][z + 1] == 0:
         griglia[x][y + 1][z + 1] = -2
-        lista2.append([x, y + 1, z + 1])
+        lista3.append([x, y + 1, z + 1])
     if griglia[x + 1][y + 1][z + 1] == 0:
         griglia[x + 1][y + 1][z + 1] = -2
-        lista2.append([x + 1, y + 1, z + 1])
+        lista3.append([x + 1, y + 1, z + 1])
 
 lista = creazione_lista_atomi(griglia)
 
 ppdb2 = fromdataframe_topdb(lista)
 
-ppdb2.to_pdb(path='./3eiy_stripped.pdb',
+ppdb2.to_pdb(path='./3eiy_stripped0.pdb',
              records=['ATOM'],
              gz=False,
              append_newline=True)
