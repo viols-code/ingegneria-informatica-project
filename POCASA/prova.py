@@ -32,18 +32,18 @@ def eliminazione_idrogeni(ppdb):
     return ppdb
 
 
-def trova_minimo(matrice):
+def trova_minimo(matrice, scala):
     m = 0
     for i in range(len(matrice)):
         m = min(m, min(matrice[i][0], matrice[i][2], matrice[i][2]))
-    return m
+    return m * scala
 
 
-def trova_massimo(matrice):
+def trova_massimo(matrice, scala):
     m = 0
     for i in range(len(matrice)):
         m = max(m, max(matrice[i][0], matrice[i][2], matrice[i][2]))
-    return m
+    return m * scala
 
 
 def creazione_matrice(ppdb):
@@ -55,9 +55,9 @@ def creazione_matrice(ppdb):
 def inizializzazione_matrice(matrix, m):
     # per avere tutte le coordinate positive
     for i in range(len(matrix)):
-        matrix[i][0] += m
-        matrix[i][1] += m
-        matrix[i][2] += m
+        matrix[i][0] -= m
+        matrix[i][1] -= m
+        matrix[i][2] -= m
 
     return matrix
 
@@ -88,22 +88,25 @@ def inizializzazione_griglia(matrix, dimension, scala):
 
     return grid
 
-
-@jit(nopython=True)
 def creazione_lista_atomi(grid, m, dimensione, scala):
-    list2 = []
-    count = 1
+    list1 = []
+    lettere ="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    dim = 2
     for i in range(dimensione * scala + 1):
         for j in range(dimensione * scala + 1):
             for k in range(dimensione * scala + 1):
-                if grid[i][j][k] == 0:
-                    list2.append(
-                        ('ATOM', count, '', 'H', '', 'ILE', '', 'A', count, '', '', (i - m) / scala, (j - m) / scala, (k - m) / scala, 1.0, 0,
-                         '', '', 'H', 0, count))
-                    count += 1
-
+                if grid[i][j][k] >= 2:
+                    list1.append((int(grid[i][j][k]), (i + m) / scala, (j + m) / scala, (k + m) / scala))
+                    dim = max(dim, int(grid[i][j][k]))
+    list2 = []
+    count = 1
+    for lettera in range(2, dim + 1):
+        for i in range(len(list1)):
+            if list1[i][0] == lettera:
+                list2.append(('ATOM', count, '', 'H', '', 'ILE', '', lettere[(list1[i][0] - 2) % len(lettere)], count, '', '', int(list1[i][1]) , int(list1[i][2]), int(list1[i][3]),
+                              1.0, 0,'', '', 'H', 0, count))
+                count += 1
     return list2
-
 
 def fromdataframe_topdb(list1):
     pp: DataFrame = pd.DataFrame(list1,
@@ -171,15 +174,39 @@ def rimoziozione_noise_points(griglia, dimensione, scala):
                     griglia[i][j][k] = -3
     return griglia
 
+def bfs(griglia, dimensione, scala):
+    queue = []
+    counter = 1
+    c=0
+    for i in range(dimensione * scala + 1):
+        for j in range(dimensione * scala + 1):
+            for k in range(dimensione * scala + 1):
+                if(griglia[i][j][k] == 0):
+                    counter += 1
+                    griglia[i][j][k] = counter
+                    queue.append((i, j, k))
+                while(len(queue) != 0):
+                    h = queue.pop()
+                    x = h[0]
+                    y = h[1]
+                    z = h[2]
+                    for c1 in range(max(0, x - 1), min(dimensione * scala + 1, x + 2)):
+                        for c2 in range(max(0, y - 1), min(dimensione * scala + 1, y + 2)):
+                            for c3 in range(max(0, z-1), min(dimensione * scala + 1, z + 2)):
+                                if griglia[c1][c2][c3] == 0:
+                                    c+=1
+                                    griglia[c1][c2][c3] = counter
+                                    queue.append((c1, c2, c3))
+    return griglia
 
 print('Inserisci il lato della griglia: ')
 lato = input()
-lato = int(lato)
+lato = float(lato)
 
 while(lato != 0.5 and lato != 1):
     print('Inserisci il lato della griglia: ')
     lato = input()
-    lato = int(lato)
+    lato = float(lato)
 
 scala = 1
 if lato == 0.5:
@@ -189,10 +216,10 @@ ppdb1 = lettura_file()
 ppdb1 = eliminazione_idrogeni(ppdb1)
 
 matrice = creazione_matrice(ppdb1)
-max_c = trova_massimo(matrice)
-max_c = int(max_c) + 17
-min_c = trova_minimo(matrice)
-min_c = int(min_c) - 16
+max_c = trova_massimo(matrice, scala)
+max_c = int(max_c) + 8 * scala + 1
+min_c = trova_minimo(matrice, scala)
+min_c = int(min_c) - 8 * scala
 matrice = inizializzazione_matrice(matrice, min_c)
 griglia = inizializzazione_griglia(matrice, max_c - min_c, scala)
 
@@ -204,11 +231,13 @@ griglia = crea_bordo(griglia, r, max_c - min_c, scala)
 
 griglia = rimoziozione_noise_points(griglia, max_c - min_c, scala)
 
+griglia = bfs(griglia, max_c - min_c, scala)
+
 lista = creazione_lista_atomi(griglia, min_c, max_c - min_c, scala)
 
 ppdb2 = fromdataframe_topdb(lista)
 
-ppdb2.to_pdb(path='./1a0t_binding_sites_radius_2.pdb',
+ppdb2.to_pdb(path='./output.pdb',
              records=['ATOM'],
              gz=False,
              append_newline=True)
