@@ -97,90 +97,90 @@ def tangent(c1, c2, r1, r2):
     return True
 
 
-def is_tangent(R_p, R_i, R_j, R_k, r, o_i, o_j, o_k):
+def is_tangent(r_p, r_i, r_j, r_k, r, o_i, o_j, o_k):
     """
      Return true if the probe sphere is tangent to all the other three sphere, false otherwise
-     :param R_p: the center of the probe sphere
-     :param R_i: the center of the first sphere
-     :param R_j: the center of the second sphere
-     :param R_k: the center of the third sphere
+     :param r_p: the center of the probe sphere
+     :param r_i: the center of the first sphere
+     :param r_j: the center of the second sphere
+     :param r_k: the center of the third sphere
      :param r: the radius of the probe sphere
      :param o_i: the radius of the first sphere
      :param o_j: the radius of the second sphere
      :param o_k: the radius of the third sphere
      """
-    if tangent(R_p, R_i, r, o_i) and tangent(R_p, R_j, r, o_j) and tangent(R_p, R_k, r, o_k):
+    if tangent(r_p, r_i, r, o_i) and tangent(r_p, r_j, r, o_j) and tangent(r_p, r_k, r, o_k):
         return True
     return False
 
 
-def probe_sphere_control(R_p, R_i, R_j, R_k, r, o_i, o_j, o_k, protein):
+def probe_sphere_control(r_p, r_i, r_j, r_k, r, o_i, o_j, o_k, protein):
     """
      Return true if the probe sphere is tangent to all the other three sphere, false otherwise
-     :param R_p: the center of the probe sphere
-     :param R_i: the center of the first sphere
-     :param R_j: the center of the second sphere
-     :param R_k: the center of the third sphere
+     :param r_p: the center of the probe sphere
+     :param r_i: the center of the first sphere
+     :param r_j: the center of the second sphere
+     :param r_k: the center of the third sphere
      :param r: the radius of the probe sphere
      :param o_i: the radius of the first sphere
      :param o_j: the radius of the second sphere
      :param o_k: the radius of the third sphere
      :param protein: the atom's protein
      """
-    if is_tangent(R_p, R_i, R_j, R_k, r, o_i, o_j, o_k):
+    if is_tangent(r_p, r_i, r_j, r_k, r, o_i, o_j, o_k):
         for t in range(len(protein)):
-            if distance(R_p[0], protein[t][0], R_p[1], protein[t][1], R_p[2], protein[t][2]) < \
+            if distance(r_p[0], protein[t][0], r_p[1], protein[t][1], r_p[2], protein[t][2]) < \
                     radii[protein[t][3]] + r - 1e-5:
                 return False
         return True
     return False
 
 
-def find_high(R_b, R_i, r, o_i):
+def find_high(r_b, r_i, r, o_i):
     """
      Return the high
-     :param R_b: the point b
-     :param R_i: the center of the first sphere
+     :param r_b: the point b
+     :param r_i: the center of the first sphere
      :param r: the radius of the probe sphere to be found
      :param o_i: the radius of the first sphere
      """
-    return (o_i + r) ** 2 - (distance(R_b[0], R_i[0], R_b[1], R_i[1], R_b[2], R_i[2])) ** 2
+    return (o_i + r) ** 2 - (distance(r_b[0], r_i[0], r_b[1], r_i[1], r_b[2], r_i[2])) ** 2
 
 
-def find_vectors(R_i, R_j, R_k, o_i, o_j, o_k, r):
+def find_vectors(r_i, r_j, r_k, o_i, o_j, o_k, r):
     """
      Return the T vectors
-     :param R_i: the center of the first sphere
-     :param R_j: the center of the second sphere
-     :param R_k: the center of the third sphere
+     :param r_i: the center of the first sphere
+     :param r_j: the center of the second sphere
+     :param r_k: the center of the third sphere
      :param r: the radius of the probe sphere
      :param o_i: the radius of the first sphere
      :param o_j: the radius of the second sphere
      :param o_k: the radius of the third sphere
      """
-    T_ij = []
-    T_jk = []
-    T_ik = []
+    t_ij = []
+    t_jk = []
+    t_ik = []
     for t in range(3):
-        T_ij.append(1 / 2 * (R_i[t] + R_j[t]) + ((o_i + r) ** 2 - (o_j + r) ** 2) * (R_j[t] - R_i[t]) / (
-                2 * (distance(R_i[0], R_j[0], R_i[1], R_j[1], R_i[2], R_j[2])) ** 2))
-        T_jk.append(1 / 2 * (R_j[t] + R_k[t]) + ((o_j + r) ** 2 - (o_k + r) ** 2) * (R_k[t] - R_j[t]) / (
-                2 * (distance(R_k[0], R_j[0], R_k[1], R_j[1], R_k[2], R_j[2])) ** 2))
-        T_ik.append(1 / 2 * (R_i[t] + R_k[t]) + ((o_i + r) ** 2 - (o_k + r) ** 2) * (R_k[t] - R_i[t]) / (
-                2 * (distance(R_k[0], R_i[0], R_k[1], R_i[1], R_k[2], R_i[2])) ** 2))
+        t_ij.append(1 / 2 * (r_i[t] + r_j[t]) + ((o_i + r) ** 2 - (o_j + r) ** 2) * (r_j[t] - r_i[t]) / (
+                2 * (distance(r_i[0], r_j[0], r_i[1], r_j[1], r_i[2], r_j[2])) ** 2))
+        t_jk.append(1 / 2 * (r_j[t] + r_k[t]) + ((o_j + r) ** 2 - (o_k + r) ** 2) * (r_k[t] - r_j[t]) / (
+                2 * (distance(r_k[0], r_j[0], r_k[1], r_j[1], r_k[2], r_j[2])) ** 2))
+        t_ik.append(1 / 2 * (r_i[t] + r_k[t]) + ((o_i + r) ** 2 - (o_k + r) ** 2) * (r_k[t] - r_i[t]) / (
+                2 * (distance(r_k[0], r_i[0], r_k[1], r_i[1], r_k[2], r_i[2])) ** 2))
 
-    T_ik = np.array(T_ik)
-    T_ij = np.array(T_ij)
-    T_jk = np.array(T_jk)
-    return T_ij, T_jk, T_ik
+    t_ik = np.array(t_ik)
+    t_ij = np.array(t_ij)
+    t_jk = np.array(t_jk)
+    return t_ij, t_jk, t_ik
 
 
-def find_probe_sphere(R_i, R_j, R_k, o_i, o_j, o_k, r, protein):
+def find_probe_sphere(r_i, r_j, r_k, o_i, o_j, o_k, r, protein):
     """
      Return the probe sphere founded
-     :param R_i: the center of the first sphere
-     :param R_j: the center of the second sphere
-     :param R_k: the center of the third sphere
+     :param r_i: the center of the first sphere
+     :param r_j: the center of the second sphere
+     :param r_k: the center of the third sphere
      :param r: the radius of the probe sphere
      :param o_i: the radius of the first sphere
      :param o_j: the radius of the second sphere
@@ -189,22 +189,22 @@ def find_probe_sphere(R_i, R_j, R_k, o_i, o_j, o_k, r, protein):
      """
     probe_sphere = []
 
-    T_ij, T_jk, T_ik = find_vectors(R_i, R_j, R_k, o_i, o_j, o_k, r)
+    t_ij, t_jk, t_ik = find_vectors(r_i, r_j, r_k, o_i, o_j, o_k, r)
 
-    R_i = np.array(R_i)
-    R_j = np.array(R_j)
-    R_k = np.array(R_k)
+    r_i = np.array(r_i)
+    r_j = np.array(r_j)
+    r_k = np.array(r_k)
 
-    x = R_j - R_i
+    x = r_j - r_i
     x = x / np.linalg.norm(x)
-    y = R_k - R_i
+    y = r_k - r_i
     y = y - (np.dot(y, x) / np.dot(x, x)) * x
     y = y / np.linalg.norm(y)
-    U = (np.dot(np.array(T_ik - T_ij), np.array(T_ik - R_i)) / np.dot(np.array(T_ik - R_i), y)) * y
+    U = (np.dot(np.array(t_ik - t_ij), np.array(t_ik - r_i)) / np.dot(np.array(t_ik - r_i), y)) * y
 
-    R_b = R_i + (T_ij - R_i) + U
+    r_b = r_i + (t_ij - r_i) + U
 
-    h = find_high(R_b, R_i, r, o_i)
+    h = find_high(r_b, r_i, r, o_i)
 
     if h >= 0:
         h = math.sqrt(h)
@@ -220,23 +220,23 @@ def find_probe_sphere(R_i, R_j, R_k, o_i, o_j, o_k, r, protein):
 
     z = z / np.linalg.norm(z)
 
-    R_p = R_b + h * z
-    if probe_sphere_control(R_p, R_i, R_j, R_k, r, o_i, o_j, o_k, protein):
-        probe_sphere.append([R_p, r])
+    r_p = r_b + h * z
+    if probe_sphere_control(r_p, r_i, r_j, r_k, r, o_i, o_j, o_k, protein):
+        probe_sphere.append([r_p, r])
 
-    R_p = R_b - h * z
-    if probe_sphere_control(R_p, R_i, R_j, R_k, r, o_i, o_j, o_k, protein):
-        probe_sphere.append([R_p, r])
+    r_p = r_b - h * z
+    if probe_sphere_control(r_p, r_i, r_j, r_k, r, o_i, o_j, o_k, protein):
+        probe_sphere.append([r_p, r])
 
     return probe_sphere
 
 
-def check_distance(R_i, R_j, R_k, o_i, o_j, o_k, r):
-    if distance(R_i[0], R_j[0], R_i[1], R_j[1], R_i[2], R_j[2]) > o_i + o_j + 2 * r:
+def check_distance(r_i, r_j, r_k, o_i, o_j, o_k, r):
+    if distance(r_i[0], r_j[0], r_i[1], r_j[1], r_i[2], r_j[2]) > o_i + o_j + 2 * r:
         return True
-    if distance(R_i[0], R_k[0], R_i[1], R_k[1], R_i[2], R_k[2]) > o_i + o_k + 2 * r:
+    if distance(r_i[0], r_k[0], r_i[1], r_k[1], r_i[2], r_k[2]) > o_i + o_k + 2 * r:
         return True
-    if distance(R_j[0], R_k[0], R_j[1], R_k[1], R_j[2], R_k[2]) > o_j + o_k + 2 * r:
+    if distance(r_j[0], r_k[0], r_j[1], r_k[1], r_j[2], r_k[2]) > o_j + o_k + 2 * r:
         return True
     return False
 
@@ -304,12 +304,12 @@ def accretion_layer(protein, total_layer, r, total_previous_layers_length):
     return probe_sphere
 
 
-def filter_not_buried_probes(current_layer, protein, BC_threshold, r):
+def filter_not_buried_probes(current_layer, protein, bc_threshold, r):
     """
      Filter the probe spheres that are not buried enough
      :param current_layer: the layer to be filtered
      :param protein: the atom's protein
-     :param BC_threshold: the threshold
+     :param bc_threshold: the threshold
      :param r : radius used to compute burial counts
      """
     # Parameter that choose how to count the proteins
@@ -324,7 +324,7 @@ def filter_not_buried_probes(current_layer, protein, BC_threshold, r):
                         current_layer[i][0][2], protein[j][2]) - non_strict * radii[protein[j][3]] < r - 1e-5:
                 count += 1
 
-        if count >= BC_threshold:
+        if count >= bc_threshold:
             buried_probes.append((current_layer[i], count))
 
     return buried_probes
@@ -436,7 +436,7 @@ if __name__ == '__main__':
     # Get the r_probe
     r_probe = find_radius(removing_hydrogen)
     # Get the BC threshold
-    BC = find_bc_threshold(removing_hydrogen)
+    bc = find_bc_threshold(removing_hydrogen)
 
     # ###########
     # Construction of the first layer
@@ -445,7 +445,7 @@ if __name__ == '__main__':
     # Build the first layer
     c = initial_layer(atoms, r_probe)
     # Filter the non-buried probes
-    filtered_1 = filter_not_buried_probes(c, atoms, BC, r_bc)
+    filtered_1 = filter_not_buried_probes(c, atoms, bc, r_bc)
     # Filter the probes in order to let them be more spread
     filtered_2 = filter_not_distributed_probes(filtered_1, r_weed)
 
@@ -464,7 +464,7 @@ if __name__ == '__main__':
         # Filter the probes non-distributed enough with the previous layers
         filtered_0 = filter_non_distributed_probes_with_previous_layer(c, result, r_weed)
         # Filter the non-buried probes
-        filtered_1 = filter_not_buried_probes(filtered_0, atoms, BC, r_bc)
+        filtered_1 = filter_not_buried_probes(filtered_0, atoms, bc, r_bc)
         # Filter the probes in order to let them be more spread
         filtered_2 = filter_not_distributed_probes(filtered_1, r_weed)
 
