@@ -468,7 +468,7 @@ if __name__ == '__main__':
         # Filter the probes in order to let them be more spread
         filtered_2 = filter_not_distributed_probes(filtered_1, r_weed)
 
-    # Create the file pdb
+    # Create the file PDB
     layer = atoms_list(result)
     layer = from_data_frame_to_pdb(layer)
     layer.to_pdb(path='./output.pdb',
