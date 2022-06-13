@@ -200,9 +200,9 @@ def find_probe_sphere(r_i, r_j, r_k, o_i, o_j, o_k, r, protein):
     y = r_k - r_i
     y = y - (np.dot(y, x) / np.dot(x, x)) * x
     y = y / np.linalg.norm(y)
-    U = (np.dot(np.array(t_ik - t_ij), np.array(t_ik - r_i)) / np.dot(np.array(t_ik - r_i), y)) * y
+    u = (np.dot(np.array(t_ik - t_ij), np.array(t_ik - r_i)) / np.dot(np.array(t_ik - r_i), y)) * y
 
-    r_b = r_i + (t_ij - r_i) + U
+    r_b = r_i + (t_ij - r_i) + u
 
     h = find_high(r_b, r_i, r, o_i)
 
@@ -251,17 +251,17 @@ def initial_layer(protein, r):
     for i in range(len(protein)):
         for j in range(i + 1, len(protein)):
             for k in range(j + 1, len(protein)):
-                R_i = [protein[i][0], protein[i][1], protein[i][2]]
-                R_j = [protein[j][0], protein[j][1], protein[j][2]]
-                R_k = [protein[k][0], protein[k][1], protein[k][2]]
+                r_i = [protein[i][0], protein[i][1], protein[i][2]]
+                r_j = [protein[j][0], protein[j][1], protein[j][2]]
+                r_k = [protein[k][0], protein[k][1], protein[k][2]]
                 o_i = radii[protein[i][3]]
                 o_j = radii[protein[j][3]]
                 o_k = radii[protein[k][3]]
 
-                if check_distance(R_i, R_j, R_k, o_i, o_j, o_k, r):
+                if check_distance(r_i, r_j, r_k, o_i, o_j, o_k, r):
                     continue
 
-                putative_probe_sphere = find_probe_sphere(R_i, R_j, R_k, o_i, o_j, o_k, r, protein)
+                putative_probe_sphere = find_probe_sphere(r_i, r_j, r_k, o_i, o_j, o_k, r, protein)
                 for probe in putative_probe_sphere:
                     probe_sphere.append(probe)
 
@@ -276,8 +276,6 @@ def accretion_layer(protein, total_layer, r, total_previous_layers_length):
      :param r: the radius of the probe spheres created
      :param total_previous_layers_length: the length of the previous layers
      """
-    print("Total computation:")
-    print(len(total_layer))
 
     probe_sphere = []
     for i in range(len(total_layer)):
@@ -287,17 +285,17 @@ def accretion_layer(protein, total_layer, r, total_previous_layers_length):
                         k < total_previous_layers_length:
                     continue
 
-                R_i = [total_layer[i][0][0][0], total_layer[i][0][0][1], total_layer[i][0][0][2]]
-                R_j = [total_layer[j][0][0][0], total_layer[j][0][0][1], total_layer[j][0][0][2]]
-                R_k = [total_layer[k][0][0][0], total_layer[k][0][0][1], total_layer[k][0][0][2]]
+                r_i = [total_layer[i][0][0][0], total_layer[i][0][0][1], total_layer[i][0][0][2]]
+                r_j = [total_layer[j][0][0][0], total_layer[j][0][0][1], total_layer[j][0][0][2]]
+                r_k = [total_layer[k][0][0][0], total_layer[k][0][0][1], total_layer[k][0][0][2]]
                 o_i = total_layer[i][0][1]
                 o_j = total_layer[j][0][1]
                 o_k = total_layer[k][0][1]
 
-                if check_distance(R_i, R_j, R_k, o_i, o_j, o_k, r):
+                if check_distance(r_i, r_j, r_k, o_i, o_j, o_k, r):
                     continue
 
-                putative_probe_sphere = find_probe_sphere(R_i, R_j, R_k, o_i, o_j, o_k, r, protein)
+                putative_probe_sphere = find_probe_sphere(r_i, r_j, r_k, o_i, o_j, o_k, r, protein)
                 for probe in putative_probe_sphere:
                     probe_sphere.append(probe)
 
@@ -364,7 +362,6 @@ def filter_non_distributed_probes_with_previous_layer(current_layer, previous_la
      :param r: minimal separation between probe spheres
      """
     distributed_probes = []
-    print(previous_layer)
     for i in range(len(current_layer)):
         flag = True
         for j in range(len(previous_layer)):
