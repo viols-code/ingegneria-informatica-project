@@ -344,9 +344,11 @@ def filter_not_distributed_probes(current_layer, r):
                             current_layer[i][0][0][2], current_layer[j][0][0][2]) <= r - 1e-5:
                     if current_layer[i][1] < current_layer[j][1]:
                         flag = False
+                        break
                     elif current_layer[i][1] == current_layer[j][1]:
                         if i > j:
                             flag = False
+                            break
 
         if flag:
             distributed_probe_spheres.append(current_layer[i])
