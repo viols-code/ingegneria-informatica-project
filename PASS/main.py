@@ -445,11 +445,11 @@ def from_data_frame_to_pdb(list1):
 
 def calculate_pw(probe_spheres, d, r):
     """
-    Calculate the pw of each probe sphere
+    Calculate the PW of each probe sphere
     :param probe_spheres: the final probe spheres
     :param d: parameter defining the probe weight (PW) envelope function
     :param r: parameter defining the probe weight (PW) envelope function
-    :return: the list of probe spheres with the pw weight of each one of them
+    :return: the list of probe spheres with the PW weight of each one of them
     """
     pw_probes = []
     for i in probe_spheres:
@@ -464,9 +464,9 @@ def calculate_pw(probe_spheres, d, r):
 
 def take_pw(elem):
     """
-    Return the pw weight of the given probe sphere
+    Return the PW weight of the given probe sphere
     :param elem: a probe sphere
-    :return: the pw weight
+    :return: the PW weight
     """
     return elem[1]
 
@@ -524,7 +524,7 @@ if __name__ == '__main__':
     # Smooth
     if len(argv) > 4:
         if argv[4] == "-all":
-            s = 0
+            s = False
 
     # Read the file PDB
     pdb1 = reading_file(path_input)
