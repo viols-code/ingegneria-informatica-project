@@ -501,9 +501,11 @@ if __name__ == '__main__':
     from sys import argv
 
     # ###########
-    # Protein
+    # Protein and output paths
     # ###########
-    path = "1a0q_pocket.pdb"
+    path_input = argv[1]
+    path_output = argv[2]
+    path_asp = argv[3]
 
     # ###########
     # Parameters
@@ -519,14 +521,13 @@ if __name__ == '__main__':
     pw_min = 1100
     s = True
 
-    # Arguments
-
-    if len(argv) > 2:
-        if argv[1] == "-all":
+    # Smooth
+    if len(argv) > 4:
+        if argv[4] == "-all":
             s = 0
 
     # Read the file PDB
-    pdb1 = reading_file(path)
+    pdb1 = reading_file(path_input)
     # Remove the hydrogen based on their percentage in the all protein
     removing_hydrogen = hydrogen(pdb1)
     atoms = delete_hydrogen(removing_hydrogen, pdb1)
@@ -574,7 +575,7 @@ if __name__ == '__main__':
     if len(result) > 0:
         layer = atoms_list(result)
         layer = from_data_frame_to_pdb(layer)
-        layer.to_pdb(path='./output.pdb',
+        layer.to_pdb(path=path_output,
                      records=['ATOM'],
                      gz=False,
                      append_newline=True)
@@ -592,7 +593,7 @@ if __name__ == '__main__':
     if len(asp) > 0:
         layer = atoms_list(asp)
         layer = from_data_frame_to_pdb(layer)
-        layer.to_pdb(path='./asp.pdb',
+        layer.to_pdb(path=path_asp,
                      records=['ATOM'],
                      gz=False,
                      append_newline=True)
