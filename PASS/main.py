@@ -232,6 +232,17 @@ def find_probe_sphere(r_i, r_j, r_k, o_i, o_j, o_k, r, protein):
 
 
 def check_distance(r_i, r_j, r_k, o_i, o_j, o_k, r):
+    """
+    Return true if the probe spheres are near enough, false otherwise
+    :param r_i: the center of the first sphere
+    :param r_j: the center of the second sphere
+    :param r_k: the center of the third sphere
+    :param o_i: the radius of the first sphere
+    :param o_j: the radius of the second sphere
+    :param o_k: the radius of the third sphere
+    :param r: the radius of the probe sphere
+    :return: true if the probe spheres are near enough, false otherwise
+    """
     if distance(r_i[0], r_j[0], r_i[1], r_j[1], r_i[2], r_j[2]) > o_i + o_j + 2 * r:
         return True
     if distance(r_i[0], r_k[0], r_i[1], r_k[1], r_i[2], r_k[2]) > o_i + o_k + 2 * r:
@@ -379,6 +390,28 @@ def filter_non_distributed_probes_with_previous_layer(current_layer, previous_la
     return distributed_probes
 
 
+def smooth(probe_spheres, r, minimum):
+    """
+    Smoothing the probe_spheres
+    :param probe_spheres: all the probes found
+    :param r: visualization radius
+    :param minimum: the minimum number of probes nearby
+    :return: the probe spheres smoothed
+    """
+    probes = []
+    for probe1 in probe_spheres:
+        count = 0
+        for probe2 in probe_spheres:
+            if distance(probe1[0][0][0], probe2[0][0][0], probe1[0][0][1],
+                        probe2[0][0][1], probe1[0][0][2], probe2[0][0][2]) <= r:
+                count += 1
+
+        if count >= minimum + 1:
+            probes.append(probe1)
+
+    return probes
+
+
 def atoms_list(probes):
     """
      Create the atoms list for the PDB file
@@ -410,15 +443,67 @@ def from_data_frame_to_pdb(list1):
     return pdb
 
 
+def calculate_pw(probe_spheres, d, r):
+    """
+    Calculate the pw of each probe sphere
+    :param probe_spheres: the final probe spheres
+    :param d: parameter defining the probe weight (PW) envelope function
+    :param r: parameter defining the probe weight (PW) envelope function
+    :return: the list of probe spheres with the pw weight of each one of them
+    """
+    pw_probes = []
+    for i in probe_spheres:
+        pw = 0
+        for j in probe_spheres:
+            pw += j[1] * math.exp(-
+                                  (distance(i[0][0][0], j[0][0][0], i[0][0][1], j[0][0][1], i[0][0][2],
+                                            j[0][0][2]) - r) ** 2 / d ** 2)
+        pw_probes.append((i, pw))
+    return pw_probes
+
+
+def take_pw(elem):
+    """
+    Return the pw weight of the given probe sphere
+    :param elem: a probe sphere
+    :return: the pw weight
+    """
+    return elem[1]
+
+
+def find_asp_points(probe_spheres, r, minimum):
+    """
+    Find the ASP points
+    :param probe_spheres: all the probes founded
+    :param r: ASP radius, the minimum distance between two ASP points
+    :param minimum: the minimum PW of ASP points
+    :return: the ASP points
+    """
+    asp_point = []
+    for elem in probe_spheres:
+        if elem[1] >= minimum:
+            flag = True
+            for point in asp_point:
+                if distance(elem[0][0][0][0], point[0][0][0], elem[0][0][0][1], point[0][0][1], elem[0][0][0][2],
+                            point[0][0][2]) < r:
+                    flag = False
+                    break
+            if flag:
+                asp_point.append(elem[0])
+    return asp_point
+
+
 # ###########
 # Entry point
 # ###########
 
 if __name__ == '__main__':
+    from sys import argv
+
     # ###########
     # Protein
     # ###########
-    path = "1lqd_pocket.pdb"
+    path = "1a0q_pocket.pdb"
 
     # ###########
     # Parameters
@@ -426,6 +511,19 @@ if __name__ == '__main__':
     r_bc = 8.0
     r_weed = 1.0
     r_accretion = 0.7
+    r_vis = 2.5
+    minimum_probe = 4
+    r_o = 2.0
+    d_o = 1.0
+    r_asp = 8.0
+    pw_min = 1100
+    s = True
+
+    # Arguments
+
+    if len(argv) > 2:
+        if argv[1] == "-all":
+            s = 0
 
     # Read the file PDB
     pdb1 = reading_file(path)
@@ -467,10 +565,36 @@ if __name__ == '__main__':
         # Filter the probes in order to let them be more spread
         filtered_2 = filter_not_distributed_probes(filtered_1, r_weed)
 
-    # Create the file PDB
-    layer = atoms_list(result)
-    layer = from_data_frame_to_pdb(layer)
-    layer.to_pdb(path='./output.pdb',
-                 records=['ATOM'],
-                 gz=False,
-                 append_newline=True)
+    # Smooth the probe spheres
+    all_probes = result
+    if s:
+        result = smooth(result, r_vis, minimum_probe)
+
+    # Create the file PDB for the probe spheres
+    if len(result) > 0:
+        layer = atoms_list(result)
+        layer = from_data_frame_to_pdb(layer)
+        layer.to_pdb(path='./output.pdb',
+                     records=['ATOM'],
+                     gz=False,
+                     append_newline=True)
+    else:
+        print("There are not probe spheres")
+
+    # Calculate the probes weight
+    asp = calculate_pw(all_probes, d_o, r_o)
+    # Sort the probe spheres based on the PW
+    asp.sort(key=take_pw, reverse=True)
+    # Find the asp points
+    asp = find_asp_points(asp, r_asp, pw_min)
+
+    # Create the file PDB for the asp points
+    if len(asp) > 0:
+        layer = atoms_list(asp)
+        layer = from_data_frame_to_pdb(layer)
+        layer.to_pdb(path='./asp.pdb',
+                     records=['ATOM'],
+                     gz=False,
+                     append_newline=True)
+    else:
+        print("There are not asp points")
