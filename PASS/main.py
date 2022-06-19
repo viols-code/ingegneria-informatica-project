@@ -29,8 +29,8 @@ def hydrogen(pdb):
      :param pdb: the protein's information
      """
     total = len(pdb.df['ATOM'])
-    no_hydrogen: DataFrame = pdb.df['ATOM'][pdb.df['ATOM']['element_symbol'] == 'H']
-    h = len(no_hydrogen)
+    hydrogen_count: DataFrame = pdb.df['ATOM'][pdb.df['ATOM']['element_symbol'] == 'H']
+    h = len(hydrogen_count)
     if h <= 0.2 * total:
         return True
     return False
@@ -322,15 +322,12 @@ def filter_not_buried_probes(current_layer, protein, bc_threshold, r):
      :param r : radius used to compute burial counts
      """
     # Parameter that choose how to count the proteins
-    # If non_strict = 1, then all the atom's protein with distance 8 will be counted
-    # If non_strict = 0, then only the atom's protein with the center distance less than 8 will be counted
-    non_strict = 0
     buried_probes = []
     for i in range(len(current_layer)):
         count = 0
         for j in range(len(protein)):
             if distance(current_layer[i][0][0], protein[j][0], current_layer[i][0][1], protein[j][1],
-                        current_layer[i][0][2], protein[j][2]) - non_strict * radii[protein[j][3]] < r - 1e-5:
+                        current_layer[i][0][2], protein[j][2]) < r - 1e-5:
                 count += 1
 
         if count >= bc_threshold:
@@ -503,9 +500,23 @@ if __name__ == '__main__':
     # ###########
     # Protein and output paths
     # ###########
-    path_input = argv[1]
-    path_output = argv[2]
-    path_asp = argv[3]
+    if len(argv) > 3:
+        path_input = argv[1]
+        path_output = argv[2]
+        path_asp = argv[3]
+    else:
+        print("Insert the path of the input, the path of the output (probe spheres) and the path of the ASP")
+        exit(1)
+
+    if not path_input.endswith('.pdb'):
+        print("The input path must be .pdb")
+        exit(1)
+    if not path_output.endswith('.pdb'):
+        print("The output path for the probe spheres must be .pdb")
+        exit(1)
+    if not path_asp.endswith('.pdb'):
+        print("The output path for the ASP must be .pdb")
+        exit(1)
 
     # ###########
     # Parameters
@@ -527,7 +538,12 @@ if __name__ == '__main__':
             s = False
 
     # Read the file PDB
-    pdb1 = reading_file(path_input)
+    try:
+        pdb1 = reading_file(path_input)
+    except ValueError:
+        print("The input path is wrong")
+        exit(1)
+
     # Remove the hydrogen based on their percentage in the all protein
     removing_hydrogen = hydrogen(pdb1)
     atoms = delete_hydrogen(removing_hydrogen, pdb1)
