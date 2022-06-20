@@ -26,7 +26,7 @@ def reading_file(protein):
 
 def hydrogen(pdb):
     """
-    Return true if the hydrogen atoms are less than the 20% of the all atoms
+    Return true if the hydrogen atoms are less than the 20% of the all atoms, false otherwise
     :param pdb: the protein's information
     """
     total = len(pdb.df['ATOM'])
