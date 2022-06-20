@@ -241,7 +241,7 @@ def check_distance(r_1, r_2, o_1, o_2, r):
     :param r: the radius of the probe sphere
     :return: true if the spheres are near enough, false otherwise
     """
-    if distance(r_1[0], r_2[0], r_1[1], r_2[1], r_1[2], r_2[2]) > o_1 + o_2 + 2 * r:
+    if distance(r_1[0], r_2[0], r_1[1], r_2[1], r_1[2], r_2[2]) > o_1 + o_2 + 2 * r + 1e-5:
         return True
     return False
 
@@ -403,7 +403,7 @@ def smooth(probe_spheres, r, minimum):
         count = 0
         for probe2 in probe_spheres:
             if distance(probe1[0][0][0], probe2[0][0][0], probe1[0][0][1],
-                        probe2[0][0][1], probe1[0][0][2], probe2[0][0][2]) <= r:
+                        probe2[0][0][1], probe1[0][0][2], probe2[0][0][2]) <= r + 1e-5:
                 count += 1
 
         if count >= minimum + 1:
