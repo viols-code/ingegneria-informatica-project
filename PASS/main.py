@@ -93,7 +93,6 @@ def tangent(c1, c2, r1, r2):
         return False
     if distance(c1[0], c2[0], c1[1], c2[1], c1[2], c2[2]) > (r1 + r2) * (1 + 1e-5):
         return False
-
     return True
 
 
