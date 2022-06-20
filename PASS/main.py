@@ -231,23 +231,17 @@ def find_probe_sphere(r_i, r_j, r_k, o_i, o_j, o_k, r, protein):
     return probe_sphere
 
 
-def check_distance(r_i, r_j, r_k, o_i, o_j, o_k, r):
+def check_distance(r_1, r_2, o_1, o_2, r):
     """
-    Return true if the probe spheres are near enough, false otherwise
-    :param r_i: the center of the first sphere
-    :param r_j: the center of the second sphere
-    :param r_k: the center of the third sphere
-    :param o_i: the radius of the first sphere
-    :param o_j: the radius of the second sphere
-    :param o_k: the radius of the third sphere
+    Return true if the spheres are near enough, false otherwise
+    :param r_1: the center of the first sphere
+    :param r_2: the center of the second sphere
+    :param o_1: the radius of the first sphere
+    :param o_2: the radius of the second sphere
     :param r: the radius of the probe sphere
-    :return: true if the probe spheres are near enough, false otherwise
+    :return: true if the spheres are near enough, false otherwise
     """
-    if distance(r_i[0], r_j[0], r_i[1], r_j[1], r_i[2], r_j[2]) > o_i + o_j + 2 * r:
-        return True
-    if distance(r_i[0], r_k[0], r_i[1], r_k[1], r_i[2], r_k[2]) > o_i + o_k + 2 * r:
-        return True
-    if distance(r_j[0], r_k[0], r_j[1], r_k[1], r_j[2], r_k[2]) > o_j + o_k + 2 * r:
+    if distance(r_1[0], r_2[0], r_1[1], r_2[1], r_1[2], r_2[2]) > o_1 + o_2 + 2 * r:
         return True
     return False
 
@@ -260,16 +254,21 @@ def initial_layer(protein, r):
     """
     probe_sphere = []
     for i in range(len(protein)):
+        r_i = [protein[i][0], protein[i][1], protein[i][2]]
+        o_i = radii[protein[i][3]]
         for j in range(i + 1, len(protein)):
+            r_j = [protein[j][0], protein[j][1], protein[j][2]]
+            o_j = radii[protein[j][3]]
+            if check_distance(r_i, r_j, o_i, o_j, r):
+                continue
+
             for k in range(j + 1, len(protein)):
-                r_i = [protein[i][0], protein[i][1], protein[i][2]]
-                r_j = [protein[j][0], protein[j][1], protein[j][2]]
                 r_k = [protein[k][0], protein[k][1], protein[k][2]]
-                o_i = radii[protein[i][3]]
-                o_j = radii[protein[j][3]]
                 o_k = radii[protein[k][3]]
 
-                if check_distance(r_i, r_j, r_k, o_i, o_j, o_k, r):
+                if check_distance(r_i, r_k, o_i, o_k, r):
+                    continue
+                if check_distance(r_j, r_k, o_j, o_k, r):
                     continue
 
                 putative_probe_sphere = find_probe_sphere(r_i, r_j, r_k, o_i, o_j, o_k, r, protein)
@@ -289,20 +288,26 @@ def accretion_layer(protein, total_layer, r, total_previous_layers_length):
     """
     probe_sphere = []
     for i in range(len(total_layer)):
+        r_i = [total_layer[i][0][0][0], total_layer[i][0][0][1], total_layer[i][0][0][2]]
+        o_i = total_layer[i][0][1]
+
         for j in range(i + 1, len(total_layer)):
+            r_j = [total_layer[j][0][0][0], total_layer[j][0][0][1], total_layer[j][0][0][2]]
+            o_j = total_layer[j][0][1]
+            if check_distance(r_i, r_j, o_i, o_j, r):
+                continue
+
             for k in range(j + 1, len(total_layer)):
                 if i < total_previous_layers_length and j < total_previous_layers_length and \
                         k < total_previous_layers_length:
                     continue
 
-                r_i = [total_layer[i][0][0][0], total_layer[i][0][0][1], total_layer[i][0][0][2]]
-                r_j = [total_layer[j][0][0][0], total_layer[j][0][0][1], total_layer[j][0][0][2]]
                 r_k = [total_layer[k][0][0][0], total_layer[k][0][0][1], total_layer[k][0][0][2]]
-                o_i = total_layer[i][0][1]
-                o_j = total_layer[j][0][1]
                 o_k = total_layer[k][0][1]
 
-                if check_distance(r_i, r_j, r_k, o_i, o_j, o_k, r):
+                if check_distance(r_i, r_k, o_i, o_k, r):
+                    continue
+                if check_distance(r_j, r_k, o_j, o_k, r):
                     continue
 
                 putative_probe_sphere = find_probe_sphere(r_i, r_j, r_k, o_i, o_j, o_k, r, protein)
