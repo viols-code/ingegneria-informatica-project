@@ -1,4 +1,5 @@
 import math
+
 import numpy as np
 import pandas as pd
 from biopandas.pdb import PandasPdb
@@ -25,9 +26,9 @@ def reading_file(protein):
 
 def hydrogen(pdb):
     """
-     Return true if the hydrogen atoms are less than the 20% of the all atoms
-     :param pdb: the protein's information
-     """
+    Return true if the hydrogen atoms are less than the 20% of the all atoms
+    :param pdb: the protein's information
+    """
     total = len(pdb.df['ATOM'])
     hydrogen_count: DataFrame = pdb.df['ATOM'][pdb.df['ATOM']['element_symbol'] == 'H']
     h = len(hydrogen_count)
@@ -38,10 +39,10 @@ def hydrogen(pdb):
 
 def delete_hydrogen(value, pdb):
     """
-     Return the protein without the hydrogen atoms if the parameter x is true
-     :param value: true if hydrogen atoms are less than the 20% of all atoms
-     :param pdb: PandasPdb
-     """
+    Return the protein without the hydrogen atoms if the parameter x is true
+    :param value: true if hydrogen atoms are less than the 20% of all atoms
+    :param pdb: PandasPdb
+    """
     protein_atoms = pdb.df['ATOM'][['x_coord', 'y_coord', 'z_coord', 'element_symbol']]
     if value:
         protein_atoms = protein_atoms[protein_atoms.element_symbol != 'H']
@@ -50,9 +51,9 @@ def delete_hydrogen(value, pdb):
 
 def find_radius(value):
     """
-     Return the radius of the probe spheres
-     :param value: true if hydrogen atoms are less than the 20% of all atoms
-     """
+    Return the radius of the probe spheres
+    :param value: true if hydrogen atoms are less than the 20% of all atoms
+    """
     if value:
         return 1.8
     return 1.5
@@ -60,9 +61,9 @@ def find_radius(value):
 
 def find_bc_threshold(value):
     """
-     Return the BC value
-     :param value: true if hydrogen atoms are less than the 20% of all atoms
-     """
+    Return the BC value
+    :param value: true if hydrogen atoms are less than the 20% of all atoms
+    """
     if value:
         return 55
     return 75
@@ -70,25 +71,25 @@ def find_bc_threshold(value):
 
 def distance(x1, x2, y1, y2, z1, z2):
     """
-     Return the 3D distance between two points
-     :param x1: first x-coordinate
-     :param x2: second x-coordinate
-     :param y1: first y-coordinate
-     :param y2: second y-coordinate
-     :param z1: first z-coordinate
-     :param z2: second z-coordinate
-     """
+    Return the 3D distance between two points
+    :param x1: first x-coordinate
+    :param x2: second x-coordinate
+    :param y1: first y-coordinate
+    :param y2: second y-coordinate
+    :param z1: first z-coordinate
+    :param z2: second z-coordinate
+    """
     return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
 
 def tangent(c1, c2, r1, r2):
     """
-     Return true two spheres are tangent, false otherwise
-     :param c1: the center of the first sphere
-     :param c2: the center of the second sphere
-     :param r1: the radius of the first sphere
-     :param r2: the radius of the second sphere
-     """
+    Return true two spheres are tangent, false otherwise
+    :param c1: the center of the first sphere
+    :param c2: the center of the second sphere
+    :param r1: the radius of the first sphere
+    :param r2: the radius of the second sphere
+    """
     if distance(c1[0], c2[0], c1[1], c2[1], c1[2], c2[2]) < (r1 + r2) * (1 - 1e-5):
         return False
     if distance(c1[0], c2[0], c1[1], c2[1], c1[2], c2[2]) > (r1 + r2) * (1 + 1e-5):
@@ -98,16 +99,16 @@ def tangent(c1, c2, r1, r2):
 
 def is_tangent(r_p, r_i, r_j, r_k, r, o_i, o_j, o_k):
     """
-     Return true if the probe sphere is tangent to all the other three sphere, false otherwise
-     :param r_p: the center of the probe sphere
-     :param r_i: the center of the first sphere
-     :param r_j: the center of the second sphere
-     :param r_k: the center of the third sphere
-     :param r: the radius of the probe sphere
-     :param o_i: the radius of the first sphere
-     :param o_j: the radius of the second sphere
-     :param o_k: the radius of the third sphere
-     """
+    Return true if the probe sphere is tangent to all the other three sphere, false otherwise
+    :param r_p: the center of the probe sphere
+    :param r_i: the center of the first sphere
+    :param r_j: the center of the second sphere
+    :param r_k: the center of the third sphere
+    :param r: the radius of the probe sphere
+    :param o_i: the radius of the first sphere
+    :param o_j: the radius of the second sphere
+    :param o_k: the radius of the third sphere
+    """
     if tangent(r_p, r_i, r, o_i) and tangent(r_p, r_j, r, o_j) and tangent(r_p, r_k, r, o_k):
         return True
     return False
@@ -115,17 +116,17 @@ def is_tangent(r_p, r_i, r_j, r_k, r, o_i, o_j, o_k):
 
 def probe_sphere_control(r_p, r_i, r_j, r_k, r, o_i, o_j, o_k, protein):
     """
-     Return true if the probe sphere is tangent to all the other three sphere, false otherwise
-     :param r_p: the center of the probe sphere
-     :param r_i: the center of the first sphere
-     :param r_j: the center of the second sphere
-     :param r_k: the center of the third sphere
-     :param r: the radius of the probe sphere
-     :param o_i: the radius of the first sphere
-     :param o_j: the radius of the second sphere
-     :param o_k: the radius of the third sphere
-     :param protein: the atom's protein
-     """
+    Return true if the probe sphere is tangent to all the other three sphere, false otherwise
+    :param r_p: the center of the probe sphere
+    :param r_i: the center of the first sphere
+    :param r_j: the center of the second sphere
+    :param r_k: the center of the third sphere
+    :param r: the radius of the probe sphere
+    :param o_i: the radius of the first sphere
+    :param o_j: the radius of the second sphere
+    :param o_k: the radius of the third sphere
+    :param protein: the atom's protein
+    """
     if is_tangent(r_p, r_i, r_j, r_k, r, o_i, o_j, o_k):
         for t in range(len(protein)):
             if distance(r_p[0], protein[t][0], r_p[1], protein[t][1], r_p[2], protein[t][2]) < \
@@ -137,26 +138,26 @@ def probe_sphere_control(r_p, r_i, r_j, r_k, r, o_i, o_j, o_k, protein):
 
 def find_high(r_b, r_i, r, o_i):
     """
-     Return the high
-     :param r_b: the point b
-     :param r_i: the center of the first sphere
-     :param r: the radius of the probe sphere to be found
-     :param o_i: the radius of the first sphere
-     """
+    Return the high
+    :param r_b: the point b
+    :param r_i: the center of the first sphere
+    :param r: the radius of the probe sphere to be found
+    :param o_i: the radius of the first sphere
+    """
     return (o_i + r) ** 2 - (distance(r_b[0], r_i[0], r_b[1], r_i[1], r_b[2], r_i[2])) ** 2
 
 
 def find_vectors(r_i, r_j, r_k, o_i, o_j, o_k, r):
     """
-     Return the T vectors
-     :param r_i: the center of the first sphere
-     :param r_j: the center of the second sphere
-     :param r_k: the center of the third sphere
-     :param r: the radius of the probe sphere
-     :param o_i: the radius of the first sphere
-     :param o_j: the radius of the second sphere
-     :param o_k: the radius of the third sphere
-     """
+    Return the T vectors
+    :param r_i: the center of the first sphere
+    :param r_j: the center of the second sphere
+    :param r_k: the center of the third sphere
+    :param r: the radius of the probe sphere
+    :param o_i: the radius of the first sphere
+    :param o_j: the radius of the second sphere
+    :param o_k: the radius of the third sphere
+    """
     t_ij = []
     t_jk = []
     t_ik = []
@@ -176,16 +177,16 @@ def find_vectors(r_i, r_j, r_k, o_i, o_j, o_k, r):
 
 def find_probe_sphere(r_i, r_j, r_k, o_i, o_j, o_k, r, protein):
     """
-     Return the probe sphere founded
-     :param r_i: the center of the first sphere
-     :param r_j: the center of the second sphere
-     :param r_k: the center of the third sphere
-     :param r: the radius of the probe sphere
-     :param o_i: the radius of the first sphere
-     :param o_j: the radius of the second sphere
-     :param o_k: the radius of the third sphere
-     :param protein: the atom's protein
-     """
+    Return the probe sphere founded
+    :param r_i: the center of the first sphere
+    :param r_j: the center of the second sphere
+    :param r_k: the center of the third sphere
+    :param r: the radius of the probe sphere
+    :param o_i: the radius of the first sphere
+    :param o_j: the radius of the second sphere
+    :param o_k: the radius of the third sphere
+    :param protein: the atom's protein
+    """
     probe_sphere = []
 
     t_ij, t_jk, t_ik = find_vectors(r_i, r_j, r_k, o_i, o_j, o_k, r)
@@ -253,10 +254,10 @@ def check_distance(r_i, r_j, r_k, o_i, o_j, o_k, r):
 
 def initial_layer(protein, r):
     """
-     Create the first layer
-     :param protein: the atom's protein
-     :param r: the radius of the probe spheres created
-     """
+    Create the first layer
+    :param protein: the atom's protein
+    :param r: the radius of the probe spheres created
+    """
     probe_sphere = []
     for i in range(len(protein)):
         for j in range(i + 1, len(protein)):
@@ -280,13 +281,12 @@ def initial_layer(protein, r):
 
 def accretion_layer(protein, total_layer, r, total_previous_layers_length):
     """
-     Create the following layers
-     :param protein: the atom's protein
-     :param total_layer: all probe spheres
-     :param r: the radius of the probe spheres created
-     :param total_previous_layers_length: the length of the previous layers
-     """
-
+    Create the following layers
+    :param protein: the atom's protein
+    :param total_layer: all probe spheres
+    :param r: the radius of the probe spheres created
+    :param total_previous_layers_length: the length of the previous layers
+    """
     probe_sphere = []
     for i in range(len(total_layer)):
         for j in range(i + 1, len(total_layer)):
@@ -314,13 +314,12 @@ def accretion_layer(protein, total_layer, r, total_previous_layers_length):
 
 def filter_not_buried_probes(current_layer, protein, bc_threshold, r):
     """
-     Filter the probe spheres that are not buried enough
-     :param current_layer: the layer to be filtered
-     :param protein: the atom's protein
-     :param bc_threshold: the threshold
-     :param r : radius used to compute burial counts
-     """
-    # Parameter that choose how to count the proteins
+    Filter the probe spheres that are not buried enough
+    :param current_layer: the layer to be filtered
+    :param protein: the atom's protein
+    :param bc_threshold: the threshold
+    :param r : radius used to compute burial counts
+    """
     buried_probes = []
     for i in range(len(current_layer)):
         count = 0
@@ -337,10 +336,10 @@ def filter_not_buried_probes(current_layer, protein, bc_threshold, r):
 
 def filter_not_distributed_probes(current_layer, r):
     """
-     Filter the probe spheres that are not distributed enough
-     :param current_layer: the layer to be filtered
-     :param r: minimal separation between probe spheres
-     """
+    Filter the probe spheres that are not distributed enough
+    :param current_layer: the layer to be filtered
+    :param r: minimal separation between probe spheres
+    """
     distributed_probe_spheres = []
     for i in range(len(current_layer)):
         flag = True
@@ -365,11 +364,11 @@ def filter_not_distributed_probes(current_layer, r):
 
 def filter_non_distributed_probes_with_previous_layer(current_layer, previous_layer, r):
     """
-     Filter the probe spheres that are not distributed enough
-     :param current_layer: the layer to be filtered
-     :param previous_layer: the previous layer between probe spheres
-     :param r: minimal separation between probe spheres
-     """
+    Filter the probe spheres that are not distributed enough
+    :param current_layer: the layer to be filtered
+    :param previous_layer: the previous layer between probe spheres
+    :param r: minimal separation between probe spheres
+    """
     distributed_probes = []
     for i in range(len(current_layer)):
         flag = True
@@ -410,9 +409,9 @@ def smooth(probe_spheres, r, minimum):
 
 def atoms_list(probes):
     """
-     Create the atoms list for the PDB file
-     :param probes: the pockets
-     """
+    Create the atoms list for the PDB file
+    :param probes: the pockets
+    """
     probe_spheres = []
     for p in range(len(probes)):
         probe_spheres.append(('ATOM', p, '', 'H', '', 'ILE', '', "", p, '', '', probes[p][0][0][0], probes[p][0][0][1],
@@ -422,9 +421,9 @@ def atoms_list(probes):
 
 def from_data_frame_to_pdb(list1):
     """
-     Create the file PDB from the atoms list
-     :param list1: the atoms list
-     """
+    Create the file PDB from the atoms list
+    :param list1: the atoms list
+    """
     pp: DataFrame = pd.DataFrame(list1,
                                  columns=['record_name', 'atom_number', 'blank_1', 'atom_name', 'alt_loc',
                                           'residue_name', 'blank_2',
