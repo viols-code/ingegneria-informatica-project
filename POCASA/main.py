@@ -1,22 +1,11 @@
 import math
-
 import numpy as np
 import pandas as pd
 from biopandas.pdb import PandasPdb
 from numba import jit
 from pandas import DataFrame
 
-# inizializza i raggi dei vari atomi
-raggio_precedente = {
-    'N': 1.6,
-    'O': 1.5,
-    'C': 1.7,
-    'F': 1.8,
-    'S': 1.8,
-    'H': 1,
-}
-
-raggio = {
+radii = {
     'N': 1.75,
     'O': 1.55,
     'C': 2.05,
@@ -25,116 +14,305 @@ raggio = {
     'H': 1,
 }
 
-# Lettura del file PDB contenente la proteina utilizzando BioPandas
-def lettura_file():
-    # chiede all'utente di inserire il path del file pdb
-    print('Inserire il path del file pdb: ')
-    path = input()
-    # legge il file pdb
+@jit(nopython=True)
+def distance(x1, x2, y1, y2, z1, z2):
+    """
+    Calculate 3D distance between two points
+    :param x1: x coordinate of the first point
+    :param x2: x coordinate of the second point
+    :param y1: y coordinate of the first point
+    :param y2: y coordinate of the second point
+    :param z1: z coordinate of the first point
+    :param z2: z coordinate of the second point
+    :return: 3D distance between two points
+    """
+    return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
+
+def reading_file(path):
+    """
+    Read the PDB file
+    """
     ppdb: PandasPdb = PandasPdb().read_pdb(path)
     return ppdb
 
-
-# Eliminazione di tutti gli idrogeni
-def eliminazione_idrogeni(ppdb):
-    # elimina gli idrogeni
+def delete_hydrogen(ppdb):
+    """
+    Return the protein without the hydrogen atoms
+    :param pdb: PandasPdb
+    """
     ppdb.df['ATOM'] = ppdb.df['ATOM'][ppdb.df['ATOM']['element_symbol'] != 'H']
     return ppdb
 
-
-# Calcola la cordinata minima tra tutti i punti della matrice,
-# che sarà utile per traslare ogni punto così da non avere punti negativi
-def trova_minimo(matrice, scala):
-    m = 0
-    for i in range(len(matrice)):
-        m = min(m, min(matrice[i][0], matrice[i][1], matrice[i][2]))
-    return m * scala
-
-
-# Calcola la cordinata massima tra tutti i punti della matrice,
-# che sarà utile per definire la dimensione della matrice
-def trova_massimo(matrice, scala):
-    m = 0
-    for i in range(len(matrice)):
-        m = max(m, max(matrice[i][0], matrice[i][1], matrice[i][2]))
-    return m * scala
-
-
-# Crea la matrice contente i centri delle proteine in input con associato il loro elemento chimico
-def creazione_matrice(ppdb):
+def matrix_creation(ppdb):
+    """
+    Creates the matrix containing the centers of the atoms with their associated element
+    :param ppdb: PandasPdb
+    :return: coordinates of centers and atomic element of atoms in input
+    """
     matrix = ppdb.df['ATOM'][['x_coord', 'y_coord', 'z_coord', 'element_symbol']].to_numpy()
     return matrix
 
-# Inizializzazione della matrice che contiene per ogni atomo (tranne l'idrogeno) le coordinate e
-# trasla ogni punto con il valore della cordinata minima per avere ogni punto positivo
-def inizializzazione_matrice(matrix, m):
-    for i in range(len(matrix)):
-        matrix[i][0] -= m
-        matrix[i][1] -= m
-        matrix[i][2] -= m
+def maximum_coordinate(coordinate_position, matrix, scale):
+    """
+    find the maximum coordinate for a specific coordinate
+    :param coordinate_position: indicate for witch coordinate calculate the maximum value
+    :param matrix: contains all the atoms
+    :param scale: scale of the grid leg's
+    :return: maximum value for the specified coordinate multiplied by scale
+    """
+    max_c = matrix[0][coordinate_position]
+    for i in range(1, len(matrix)):
+        max_c = max(max_c, matrix[i][coordinate_position])
+    return max_c
 
+def minimum_coordinate(coordinate_position, matrix, scale):
+    """
+    find the minimum coordinate for a specific coordinate
+    :param coordinate_position: indicate for witch coordinate calculate the minimum value
+    :param matrix: contains all the atoms
+    :param scale: scale of the grid leg's
+    :return: minimum value for the specified coordinate multiplied by scale
+    """
+    min_c = matrix[0][coordinate_position]
+    for i in range(1, len(matrix)):
+        min_c = min(min_c, matrix[i][coordinate_position])
+    return min_c
+
+def coordinates_scaling(max_c, min_c):
+    """
+    Scale the maximum and minimum value of the atoms to have all the value between zero and maximum - minimum for each coordinate
+    :param max_c: maximum values for each coordinates
+    :param min_c: minimum values for each coordinates
+    :return: the values needed to scale atoms coordinates
+    """
+    coordinate_scale = np.zeros((len(max_c)))
+    for i in range(len(max_c)):
+        if(min_c[i] <= 0):
+            coordinate_scale[i] = min_c[i]
+        else:
+            coordinate_scale[i] = max_c[i]
+    return coordinate_scale
+
+def matrix_initialization(matrix, coordinates_scale):
+    """
+    Translate the atoms center to have all value stored in a matrix
+    :param matrix: atoms centers
+    :param coordinates_scale: value to scale for each coordinate
+    :return: matrix with each value translated
+    """
+    for i in range(len(matrix)):
+        for coordinate in range(len(coordinates_scale)):
+            matrix[i][coordinate] -= coordinates_scale[coordinate]
     return matrix
 
-# Calcola la distanza euclidea tra due punti tridimensionali
-@jit(nopython=True)
-def distanza3D(x1, x2, y1, y2, z1, z2):
-    return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
-
-# Crea la griglia e inserisce il valore "1" nei punti che vengono toccati da almeno un atomo
-def inizializzazione_griglia(matrix, dimension, scala):
-    # Crea una griglia di soli zeri
-    grid = np.zeros((dimension*scala + 1, dimension*scala + 1, dimension*scala + 1))
+def grid_initialization(matrix, dim, scale):
+    """
+    Create the grid and store it in a matrix
+    :param matrix: atoms centers
+    :param dim: dimesion of the grid
+    :param scale: scale of the grid leg's
+    :return: grid stores in a matrix with values one and zero
+    """
+    # Create a grid full of zeros
+    dim_x = int(dim[0])
+    dim_y = int(dim[1])
+    dim_z = int(dim[2])
+    grid = np.zeros((dim_x + 1, dim_y + 1, dim_z + 1))
 
     for i in range(len(matrix)):
         intx = int(matrix[i][0])
         inty = int(matrix[i][1])
         intz = int(matrix[i][2])
-        raggio_atomi = 1.8
-        if matrix[i][3] in raggio:
-            raggio_atomi = raggio[matrix[i][3]]
+        atom_radious = 1.8
+        if matrix[i][3] in radii:
+            atom_radious = radii[matrix[i][3]]
         else:
             print('Atomo ' + matrix[i][3] + ' non esistente')
-        raggio_maggiore = 0
-        for key in raggio:
-            raggio_maggiore = max(raggio_maggiore, raggio[key])
-        raggio_maggiore = int(raggio_maggiore)
-        # I punti (j, k, t) sono i punti che potenzialmente possono essere toccati da un atomo.
-        for j in range(max(0, (intx - (raggio_maggiore + 2)) * scala), min(dimension + 1, (intx + (raggio_maggiore + 2)) * scala + 1)):
-            for k in range(max(0, (inty - (raggio_maggiore + 2)) * scala), min(dimension + 1, (inty + (raggio_maggiore + 2)) * scala + 1)):
-                for t in range(max(0, (intz - (raggio_maggiore + 2)) * scala), min(dimension + 1, (intz + (raggio_maggiore + 2)) * scala + 1)):
-                    if distanza3D(matrix[i][0], j / scala, matrix[i][1], k / scala, matrix[i][2], t / scala) < raggio_atomi:
+        maximum_radious = 0
+        for key in radii:
+            maximum_radious = max(maximum_radious, radii[key])
+        maximum_radious = int(maximum_radious)
+        # Points (j, k, t) are the points that can potentially be touched by an atom.
+        dim_x = int(dim[0])
+        dim_y = int(dim[1])
+        dim_z = int(dim[2])
+        for j in range(max(0, (intx - (maximum_radious + 2)) * scale), min(dim_x + 1, (intx + (maximum_radious + 2)) * scale + 1)):
+            for k in range(max(0, (inty - (maximum_radious + 2)) * scale), min(dim_y + 1, (inty + (maximum_radious + 2)) * scale + 1)):
+                for t in range(max(0, (intz - (maximum_radious + 2)) * scale), min(dim_z + 1, (intz + (maximum_radious + 2)) * scale + 1)):
+                    if distance(matrix[i][0], j / scale, matrix[i][1], k / scale, matrix[i][2], t / scale) < atom_radious:
                         grid[j][k][t] = 1
 
     return grid
 
-# Calcola la distanza dal bordo per ogni punto appartente a un binding sites
-def distanza_dal_bordo(x, y, z, griglia, dimensione):
-    # definisce la distanza minima a "1"
-    distanza = 1
-    while(True):
-        for i in range(max(0, x - distanza), min(dimensione + 1, x + distanza + 1)):
-            for j in range(max(0, y - distanza), min(dimensione + 1, y + distanza + 1)):
-                for k in range(max(0, z - distanza), min(dimensione + 1, z + distanza + 1)):
-                    if griglia[i][j][k] == -1:
-                        return distanza
-        distanza += 1
+@jit(nopython=True)
+def belong_to_board(x, y, z, r, grid, dim, scale):
+    """
+    Find if in a center can be create a sphere that doesn't touch the protein
+    :param x: x coordinate of the center
+    :param y: y coordinate of the center
+    :param z: z coordinate of the center
+    :param r: radius of the probe sphere
+    :param grid: grid containing the protein
+    :param dim: dimension of grid
+    :param scale: scale of the grid leg's
+    :return: 0 if the probe sphere belong to the board, 1 otherwise
+    """
+    dim_x = int(dim[0])
+    dim_y = int(dim[1])
+    dim_z = int(dim[2])
+    for i in range(max(0, (x - r * scale), min(dim_x + 1, x + r * scale + 1))):
+        for j in range(max(0, y - r * scale), min(dim_y + 1, y + r * scale + 1)):
+            for k in range(max(0, z - r * scale), min(dim_z + 1, z + r * scale + 1)):
+                if grid[i][j][k] == 1 and distance(x / scale, i / scale, y / scale, j / scale, z / scale, k / scale) < r:
+                    return 0
+    return 1
 
-# Ordina gli elemneti della lista in ingresso utilizzando l'algoritmo di Counting Sort
-def counting_sort(list1, dim, griglia, dimensione):
-    counting = np.zeros((dim + 1))
+@jit(nopython=True)
+def board_creation(grid, r, dim, scale):
+    """
+    For each point that belong to the board, all the points contained in the sphere are set to "-1"
+    :param grid: grid containing the protein
+    :param r: radius of the probe sphere
+    :param dim: dimension of grid
+    :param scale: scale of the grid leg's
+    :return: grid updated with the board identified by valie "-1"
+    """
+    dim_x = int(dim[0])
+    dim_y = int(dim[1])
+    dim_z = int(dim[2])
+    for i in range(dim_x + 1):
+        for j in range(dim_y + 1):
+            for k in range(dim_z + 1):
+                if belong_to_board(i, j, k, r, grid, dim, scale):
+                    for t in range(max(0, i - r * scale), min(dim_x + 1, i + r * scale + 1)):
+                        for v in range(max(0, j - r * scale), min(dim_y + 1, j + r * scale + 1)):
+                            for u in range(max(0, k - r * scale), min(dim_z + 1, k + r * scale + 1)):
+                                if distance(i / scale, t / scale, j /scale, v / scale, k / scale, u / scale) < r:
+                                    grid[t][v][u] = -1
+    return grid
+
+@jit(nopython=True)
+def delete_noise_points(grid, dim, spf):
+    """
+    For each point that could constitute a binding site, countspf parameter is defined
+    which counts the number of points belonging to the binding site around the point considered
+    and if the value just calculated is lower than the threshold value it's eliminated from the
+    points belonging to the binding sites
+    :param grid: grid containing the protein
+    :param dim: dimension of grid
+    :param spf: SPF parameter in input
+    :return: grid after the deletion of noise points
+    """
+    dim_x = int(dim[0])
+    dim_y = int(dim[1])
+    dim_z = int(dim[2])
+    grid_copy = np.zeros((dim_x + 1, dim_y + 1, dim_z + 1))
+    for i in range(dim_x + 1):
+        for j in range(dim_y + 1):
+            for k in range(dim_z + 1):
+                grid_copy[i][j][k] = grid[i][j][k]
+    for i in range(1, dim_x):
+        for j in range(1, dim_y):
+            for k in range(1, dim_z):
+                if grid_copy[i][j][k] != 0:
+                    continue
+                countspf = 0
+                for c1 in range(i - 1, i + 2):
+                    for c2 in range(j - 1, j + 2):
+                        for c3 in range(k - 1, k + 2):
+                            if c1 == i and c2 == j and c3 == k:
+                                continue
+                            if grid_copy[c1][c2][c3] == 0:
+                                countspf += 1
+                if countspf <= spf:
+                    grid[i][j][k] = -2
+    return grid
+
+jit(nopython=True)
+def bfs(grid, dim):
+    """
+    Associate each group of binding sites with a value that will then become a letter.
+    It is used to identify the different groups
+    :param grid: grid containing the protein
+    :param dim: dimension of grid
+    :return: grid with each binding sites group marked by a value
+    """
+    queue = []
+    counter = 1
+    dim_x = int(dim[0])
+    dim_y = int(dim[1])
+    dim_z = int(dim[2])
+    for i in range(dim_x + 1):
+        for j in range(dim_y + 1):
+            for k in range(dim_z + 1):
+                if(grid[i][j][k] == 0):
+                    counter += 1
+                    grid[i][j][k] = counter
+                    queue.append((i, j, k))
+                while(len(queue) != 0):
+                    h = queue.pop()
+                    x = h[0]
+                    y = h[1]
+                    z = h[2]
+                    for c1 in range(max(0, x - 1), min(dim_x + 1, x + 2)):
+                        for c2 in range(max(0, y - 1), min(dim_y + 1, y + 2)):
+                            for c3 in range(max(0, z-1), min(dim_z + 1, z + 2)):
+                                if grid[c1][c2][c3] == 0:
+                                    grid[c1][c2][c3] = counter
+                                    queue.append((c1, c2, c3))
+    return grid
+
+def distance_from_board(x, y, z, grid, dim):
+    """
+    Calculate the distance from the board for a point belonging to a binding sites
+    :param x: x coordinate of the point
+    :param y: y coordinate of the point
+    :param z: z coordinate of the point
+    :param grid: grid containing the protein
+    :param dim: dimension of grid
+    :return: distance from the board for this point
+    """
+    # Defines the minimum distance to "1"
+    board_distance = 1
+    while(True):
+        dim_x = int(dim[0])
+        dim_y = int(dim[1])
+        dim_z = int(dim[2])
+        for i in range(max(0, x - board_distance), min(dim_x + 1, x + board_distance + 1)):
+            for j in range(max(0, y - board_distance), min(dim_y + 1, y + board_distance + 1)):
+                for k in range(max(0, z - board_distance), min(dim_z + 1, z + board_distance + 1)):
+                    if grid[i][j][k] == -1:
+                        return board_distance
+        board_distance += 1
+
+def counting_sort(list1, groups_dim, grid, dim, scale, ranking_value):
+    """
+    Sort the elements of the list using Counting Sort algorithm
+    :param list1: list to sort
+    :param groups_dim: dimension of the list
+    :param grid: grid containing the protein
+    :param dim: dimension of grid
+    :param scale: scale of the grid leg's
+    :param ranking_value: true if sort groups considering each point with the Manhattan distance from the board, false considering each point with value "1"
+    :return: list sorted
+    """
+    groups_dim = int(groups_dim)
+    counting = np.zeros((groups_dim + 1))
     for i in range(len(list1)):
-        distanza = distanza_dal_bordo(int(list1[i][1] * scala), int(list1[i][2] * scala), int(list1[i][3] * scala), griglia, dimensione)
-        counting[list1[i][0]] += 1
+        distance = 1
+        if ranking_value:
+            distance = distance_from_board(int(list1[i][1] * scale), int(list1[i][2] * scale), int(list1[i][3] * scale), grid, dim)
+        counting[list1[i][0]] += distance
     copy_counting = []
-    for i in range(2, dim + 1):
+    for i in range(2, groups_dim + 1):
         copy_counting.append(counting[i])
     copy_counting.sort()
     copy_counting.reverse()
-    used = np.zeros((dim + 1))
+    used = np.zeros((groups_dim + 1))
     list2 = []
     for i in range(len(copy_counting)):
         current_value = 0
-        for j in range(2, dim + 1):
+        for j in range(2, groups_dim + 1):
             if(counting[j] == copy_counting[i] and used[j] == 0):
                 used[j] = 1
                 current_value = j
@@ -144,37 +322,51 @@ def counting_sort(list1, dim, griglia, dimensione):
                 list2.append(list1[j])
     return list2
 
-
-# Creazione del file PDB contenente i possibili binding sites
-def creazione_lista_atomi(grid, m, dimensione, scala, Top_n):
+def binding_sites_list_creation(grid, min_c, dim, scale, Top_n, ranking_value):
+    """
+    Creation of the PDB file containing the binding sites
+    :param grid:
+    :param min_c:
+    :param dim:
+    :param scale:
+    :param Top_n:
+    :param ranking_value:
+    :return: list containing binding sites
+    """
     list1 = []
-    lettere ="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    dim = 2
-    for i in range(dimensione + 1):
-        for j in range(dimensione + 1):
-            for k in range(dimensione + 1):
+    letters ="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    sites_dimension = 2
+    dim_x = int(dim[0])
+    dim_y = int(dim[1])
+    dim_z = int(dim[2])
+    for i in range(dim_x + 1):
+        for j in range(dim_y + 1):
+            for k in range(dim_z + 1):
                 if grid[i][j][k] >= 2:
-                    list1.append((int(grid[i][j][k]), i / scala + m, j / scala + m, k / scala + m))
-                    dim = max(dim, int(grid[i][j][k]))
-    # La lista di gruppi di binding sites viene ordinata in maniera decrescente in base alle loro dimensioni
-    list1 = counting_sort(list1, dim, grid, dimensione)
+                    list1.append((int(grid[i][j][k]), i / scale + min_c[0], j / scale + min_c[1], k / scale + min_c[2]))
+                    sites_dimension = max(sites_dimension, (grid[i][j][k]))
+    # The list of binding sites groups is sorted in descending order according to their size
+    list1 = counting_sort(list1, sites_dimension, grid, dim, scale, ranking_value)
     list2 = []
     count = 1
     current_letter = 0
-    # Ogni punto appartenente al binding site viene inserito in list2
+    # Each point belonging to a binding site is added in list2
     for i in range(len(list1)):
         if(i!=0 and list1[i][0] != list1[i-1][0]):
             current_letter += 1
         if current_letter == Top_n:
             break
-        list2.append(('ATOM', count, '', 'H', '', 'ILE', '', lettere[current_letter], count, '', '', float(list1[i][1]) , float(list1[i][2]), float(list1[i][3]),
+        list2.append(('ATOM', count, '', 'H', '', 'ILE', '', letters[current_letter], count, '', '', float(list1[i][1]) , float(list1[i][2]), float(list1[i][3]),
                     1.0 , 0,'', '', 'H', 0, count))
         count += 1
     return list2
 
-
-# La lista contenente tutti i punti del binding site viene utilizzata per creare il file PDB
 def fromdataframe_topdb(list1):
+    """
+    The list containing all binding site points is used to create the PDB file
+    :param list1: list containing binding sites to print
+    :return: PDB file to print
+    """
     pp: DataFrame = pd.DataFrame(list1,
                                  columns=['record_name', 'atom_number', 'blank_1', 'atom_name', 'alt_loc',
                                           'residue_name', 'blank_2',
@@ -182,155 +374,76 @@ def fromdataframe_topdb(list1):
                                           'z_coord',
                                           'occupancy', 'b_factor', 'blank_4', 'segment_id', 'element_symbol', 'charge',
                                           'line_idx'])
-
     ppdb = PandasPdb()
     ppdb.df['ATOM'] = pp
-
     return ppdb
 
-# Se tutti i punti attorno (ovvero, che rientrano nella sfera di raggio r) non fanno parte della
-# proteina, allora è parte del bordo
-@jit(nopython=True)
-def parte_del_bordo(x, y, z, r, griglia, dimensione, scala):
-    for i in range(max(0, (x - r * scala), min(dimensione + 1, x + r * scala + 1))):
-        for j in range(max(0, y - r * scala), min(dimensione + 1, y + r * scala + 1)):
-            for k in range(max(0, z - r * scala), min(dimensione + 1, z + r * scala + 1)):
-                if griglia[i][j][k] == 1 and distanza3D(x / scala, i / scala, y / scala, j / scala, z / scala, k / scala) < r:
-                    return 0
-    return 1
+# ###########
+# Entry point
+# ###########
 
+# Input leg dimension of the sphere
+leg = input()
+leg = float(leg)
 
-# Per ogni punto che è parte del bordo tutti i punti contenuti nella sfera vengono posti a "-1"
-@jit(nopython=True)
-def crea_bordo(griglia, r, dimensione, scala, m, M):
-    for i in range(dimensione + 1):
-        for j in range(dimensione + 1):
-            for k in range(dimensione + 1):
-                if parte_del_bordo(i, j, k, r, griglia, dimensione, scala):
-                    for t in range(max(0, i - r * scala), min(dimensione + 1, i + r * scala + 1)):
-                        for v in range(max(0, j - r * scala), min(dimensione + 1, j + r * scala + 1)):
-                            for u in range(max(0, k - r * scala), min(dimensione + 1, k + r * scala + 1)):
-                                if distanza3D(i / scala, t / scala, j /scala, v / scala, k / scala, u /scala) < r:
-                                    griglia[t][v][u] = -1
-    return griglia
+scale = 1
+if leg == 0.5:
+    scale = 2
 
+# Input of the protein's path
+path = input()
+ppdb1 = reading_file(path)
+ppdb1 = delete_hydrogen(ppdb1)
 
-# Per ogni punto che potrebbe costituire un binding site, viene contato il parametro countspf
-# che conta il numero di punti appartenenti al binding site attorno al punto considerato e
-# se il valore appena calcolato é inferiore al valore di soglia lo elimina dai punti apparteneti ai binding sites
-@jit(nopython=True)
-def rimoziozione_noise_points(griglia, dimensione, scala, spf):
-    griglia2 = np.zeros((dimensione + 1, dimensione + 1, dimensione + 1))
-    for i in range(dimensione + 1):
-        for j in range(dimensione + 1):
-            for k in range(dimensione + 1):
-                griglia2[i][j][k] = griglia[i][j][k]
-    for i in range(1, dimensione):
-        for j in range(1, dimensione):
-            for k in range(1, dimensione):
-                if griglia2[i][j][k] != 0:
-                    continue
-                countspf = 0
-                for c1 in range(i - 1, i + 2):
-                    for c2 in range(j - 1, j + 2):
-                        for c3 in range(k - 1, k + 2):
-                            if c1 == i and c2 == j and c3 == k:
-                                continue
-                            if griglia2[c1][c2][c3] == 0:
-                                countspf += 1
-                if countspf <= spf:
-                    griglia[i][j][k] = -2
-    return griglia
+matrix = matrix_creation(ppdb1)
+# Find maximum and minimum value of atom's coordinate
+max_c = np.zeros((3))
+min_c = np.zeros((3))
+for i in range(len(max_c)):
+    max_c[i] = maximum_coordinate(i, matrix, scale)
+    max_c[i] += 25 * scale
+    max_c[i] = int(max_c[i])
+    min_c[i] = minimum_coordinate(i, matrix, scale)
+    min_c[i] -= 25 * scale
+    min_c[i] = int(min_c[i])
+# translate the atoms center
+matrix = matrix_initialization(matrix, min_c)
+dim = np.zeros((3))
+for i in range(3):
+    dim[i] = max_c[i] - min_c[i] + 50 * scale
+grid = grid_initialization(matrix, dim, scale)
 
-
-# Associa ad ogni gruppo di binding sites un valore che poi diventerà una lettera
-# Serve per identificare i diversi gruppi
-@jit(nopython=True)
-def bfs(griglia, dimensione, scala):
-    queue = []
-    counter = 1
-    for i in range(dimensione + 1):
-        for j in range(dimensione + 1):
-            for k in range(dimensione + 1):
-                if(griglia[i][j][k] == 0):
-                    counter += 1
-                    griglia[i][j][k] = counter
-                    queue.append((i, j, k))
-                while(len(queue) != 0):
-                    h = queue.pop()
-                    x = h[0]
-                    y = h[1]
-                    z = h[2]
-                    for c1 in range(max(0, x - 1), min(dimensione + 1, x + 2)):
-                        for c2 in range(max(0, y - 1), min(dimensione + 1, y + 2)):
-                            for c3 in range(max(0, z-1), min(dimensione + 1, z + 2)):
-                                if griglia[c1][c2][c3] == 0:
-                                    griglia[c1][c2][c3] = counter
-                                    queue.append((c1, c2, c3))
-    return griglia
-
-print('Inserire il lato della griglia: ')
-lato = input()
-lato = float(lato)
-
-while(lato != 0.5 and lato != 1):
-    print('Inserire il lato della griglia: ')
-    lato = input()
-    lato = float(lato)
-
-scala = 1
-if lato == 0.5:
-    scala = 2
-
-ppdb1 = lettura_file()
-ppdb1 = eliminazione_idrogeni(ppdb1)
-
-matrice = creazione_matrice(ppdb1)
-max_c = trova_massimo(matrice, scala)
-max_c = int(max_c) + 8 * scala + 1
-min_c = trova_minimo(matrice, scala)
-min_c = int(min_c) - 8 * scala
-matrice = inizializzazione_matrice(matrice, min_c)
-griglia = inizializzazione_griglia(matrice, max_c - min_c, scala)
-
-
-print('Inserire il raggio della sfera: ')
+# Radius input
 r = input()
 r = int(r)
 
-print('Inserire il valore di soglia SPF (valore da 0 a 27): ')
+# SPF input
 spf = input()
 spf = int(spf)
-while spf < 0 or spf > 27:
-    print('Inserire il valore di soglia SPF (valore da 0 a 27): ')
-    spf = input()
-    spf = int(spf)
 
-print('Inserire quanti binding sites visualizzare (valore da 1 a 26): ')
+# Top_n input
 Top_n = input()
 Top_n = int(Top_n)
-while Top_n < 1 or Top_n > 26:
-    print('Inserire quanti binding sites visualizzare (valore da 1 a 26): ')
-    Top_n = input()
-    Top_n = int(Top_n)
 
-griglia = crea_bordo(griglia, r, max_c - min_c, scala, min_c, max_c)
+# Ranking input
+ranking = input()
+ranking_value = False
+if ranking == 'yes':
+    ranking_value = True
 
-griglia = rimoziozione_noise_points(griglia, max_c - min_c, scala, spf)
+grid = board_creation(grid, r, dim, scale)
+grid = delete_noise_points(grid, dim, spf)
+grid = bfs(grid, dim)
+binding_sites_list = binding_sites_list_creation(grid, min_c, dim, scale, Top_n, ranking_value)
 
-griglia = bfs(griglia, max_c - min_c, scala)
-
-lista = creazione_lista_atomi(griglia, min_c, max_c - min_c, scala, Top_n)
-
-if len(lista) > 0:
-
-    ppdb2 = fromdataframe_topdb(lista)
-
-    ppdb2.to_pdb(path='output4.pdb',
-             records=['ATOM'],
-             gz=False,
-             append_newline=True)
-
+if len(binding_sites_list) > 0:
+    ppdb2 = fromdataframe_topdb(binding_sites_list)
+    output_path = ''
+    for i in range(len(path) - 4):
+        output_path += path[i]
+    ppdb2.to_pdb(path = output_path + 'l=' + str(leg) + 'r=' + str(r) + 'spf=' + str(spf) + 'topN=' + str(Top_n) + '.pdb',
+             records = ['ATOM'],
+             gz = False,
+             append_newline = True)
 else:
-
-    print("Non ci sono binding sites")
+    print("There are no binding sites")
