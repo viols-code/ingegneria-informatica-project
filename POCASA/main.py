@@ -78,21 +78,6 @@ def minimum_coordinate(coordinate_position, matrix, scale):
         min_c = min(min_c, matrix[i][coordinate_position])
     return min_c
 
-def coordinates_scaling(max_c, min_c):
-    """
-    Scale the maximum and minimum value of the atoms to have all the value between zero and maximum - minimum for each coordinate
-    :param max_c: maximum values for each coordinates
-    :param min_c: minimum values for each coordinates
-    :return: the values needed to scale atoms coordinates
-    """
-    coordinate_scale = np.zeros((len(max_c)))
-    for i in range(len(max_c)):
-        if(min_c[i] <= 0):
-            coordinate_scale[i] = min_c[i]
-        else:
-            coordinate_scale[i] = max_c[i]
-    return coordinate_scale
-
 def matrix_initialization(matrix, coordinates_scale):
     """
     Translate the atoms center to have all value stored in a matrix
@@ -132,7 +117,7 @@ def grid_initialization(matrix, dim, scale):
         for key in radii:
             maximum_radious = max(maximum_radious, radii[key])
         maximum_radious = int(maximum_radious)
-        # Points (j, k, t) are the points that can potentially be touched by an atom.
+        # Points (j, k, t) are the points that can potentially be touched by an atom
         dim_x = int(dim[0])
         dim_y = int(dim[1])
         dim_z = int(dim[2])
@@ -382,16 +367,63 @@ def fromdataframe_topdb(list1):
 # Entry point
 # ###########
 
-# Input leg dimension of the sphere
-leg = input()
+if __name__ == '__main__':
+    from sys import argv
+
+# Leg dimension of the grid
+leg = argv[1]
 leg = float(leg)
+
+# protein's path
+path = argv[2]
+
+# Radius
+r = argv[3]
+r = int(r)
+
+# SPF
+spf = argv[4]
+spf = int(spf)
+
+# Top_n input
+Top_n = argv[5]
+Top_n = int(Top_n)
+
+# Ranking
+ranking = argv[6]
+
+if len(argv) <= 6:
+    print("Insert the dimension of the grid(1 or 0.5), the path of the input(ending with .pdb), radius value(between 1 and 8), SPF value(between 0 and 27, Top_n value(between 0 and 26), Ranking value(yes or no)")
+    exit(1)
+
+if leg != 1 and leg != 0.5:
+    print("Grid dimension must be 1 or 0.5")
+    exit(1)
+
+if not path.endswith('.pdb'):
+    print("The input path must be .pdb")
+    exit(1)
+
+if r < 1:
+    print("Radius of probe sphere must be greater than 1")
+    exit(1)
+
+if spf < 0 and spf > 27:
+    print("SPF value must be between 0 and 27")
+    exit(1)
+
+if Top_n < 0 and Top_n > 27:
+    print("Top_n value must be between 0 and 27")
+    exit(1)
+
+if ranking != 'no' and ranking != 'yes':
+    print("Radius of probe sphere must be greater than 1")
+    exit(1)
 
 scale = 1
 if leg == 0.5:
     scale = 2
 
-# Input of the protein's path
-path = input()
 ppdb1 = reading_file(path)
 ppdb1 = delete_hydrogen(ppdb1)
 
@@ -410,23 +442,9 @@ for i in range(len(max_c)):
 matrix = matrix_initialization(matrix, min_c)
 dim = np.zeros((3))
 for i in range(3):
-    dim[i] = max_c[i] - min_c[i] + 50 * scale
+    dim[i] = max_c[i] - min_c[i] + max(50 * scale, 4 * r * scale)
 grid = grid_initialization(matrix, dim, scale)
 
-# Radius input
-r = input()
-r = int(r)
-
-# SPF input
-spf = input()
-spf = int(spf)
-
-# Top_n input
-Top_n = input()
-Top_n = int(Top_n)
-
-# Ranking input
-ranking = input()
 ranking_value = False
 if ranking == 'yes':
     ranking_value = True
