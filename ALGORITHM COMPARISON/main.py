@@ -68,7 +68,7 @@ for i in range(len(pocasa_results)):
     point_touched = 0
     for j in range(len(pass_results)):
         if distance(pocasa_results[i][0], pass_results[j][0], pocasa_results[i][1], pass_results[j][1],
-                    pocasa_results[i][2], pass_results[j][2]) < 1:
+                    pocasa_results[i][2], pass_results[j][2]) <= 1.25 + 1e-5:
             point_touched = 1
             break
     if point_touched != 0:
@@ -80,7 +80,7 @@ for i in range(len(pass_results)):
     point_touched = 0
     for j in range(len(pocasa_results)):
         if distance(pass_results[i][0], pocasa_results[j][0], pass_results[i][1], pocasa_results[j][1],
-                    pass_results[i][2], pocasa_results[j][2]) < 1:
+                    pass_results[i][2], pocasa_results[j][2]) <= 1 + 1e-5:
             point_touched = 1
             break
     if point_touched != 0:
