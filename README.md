@@ -1,4 +1,5 @@
 # Computer Science and Engineering Project 2022
+# Analysis and implementation of methods for the identification of target sites within proteins to support the discovery of new drugs
 
 **Tutor:** Prof. Gianluca Palermo  
 **Area:** Architectures of computer systems  
