@@ -19,3 +19,14 @@ Where 'input.pdb' is the path of the PDB file containing the protein
 
 In order to have all the probe spheres founded and so eliminate the last filter, you can use:    
 `python main.py input.pdb output.pdb asp.pdb -all`
+
+## POCASA algorithm
+if you want to run POCASA algorithm, you can use:
+`python main.py grid_dimension input.pdb radius SPF Top_N ranking`
+Where 'grid_dimension' is the dimension of the side of the grid and must have value 0.5 or 1.
+'input.pdb' is the path of the PDB file containing the protein.
+'radius' is the radius of the probe sphere and must have value greater than 1.
+'SPF' is the SPF parameter and must have value between 1 and 26.
+'Top_' is the Top_n parameter and must have value between 0 and 26.
+'ranking' indicates if you want to sort binding sites groups considering each point as the minumum Manhattan
+distance between him and the board and must be equal to "yes" or "no". 
