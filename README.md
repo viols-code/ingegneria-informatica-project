@@ -21,7 +21,7 @@ In order to have all the probe spheres founded and so eliminate the last filter,
 `python main.py input.pdb output.pdb asp.pdb -all`
 
 ## POCASA algorithm  
-if you want to run POCASA algorithm, you can use:  
+If you want to run POCASA algorithm, you can use:  
 `python main.py grid_dimension input.pdb radius SPF Top_N ranking`  
 Where 'grid_dimension' is the dimension of the side of the grid and must have value 0.5 or 1.  
 'input.pdb' is the path of the PDB file containing the protein  
