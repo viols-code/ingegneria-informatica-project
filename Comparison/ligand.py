@@ -94,17 +94,26 @@ if __name__ == '__main__':
         print("The ligand path must be .mol2")
         exit(1)
 
-    radius = float(radius)
-
-    if type(radius) != float:
-        print("Insert a radius")
+    try:
+        radius = float(radius)
+    except ValueError:
+        print("Insert a float as the radius")
         exit(1)
 
+    # ###########
+    # Reads the file PDB and MOL2
+    # ###########
     ligand = reading_file_mol2(path_ligand)
     probes = reading_file_pdb(path_result)
 
+    # ###########
+    # Gets the atoms and spheres coordinates
+    # ###########
     ligand = store_atom_type(ligand)
     probes = store_atoms(probes)
 
+    # ###########
+    # Calculates the percentage of the coverage
+    # ###########
     percentage = calculate_percentage(ligand, probes, radius)
     print("The percentage of the coverage of the ligand is: " + str(percentage * 100) + "%")
