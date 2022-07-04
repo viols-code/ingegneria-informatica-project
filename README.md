@@ -31,3 +31,12 @@ Where:
 - 'SPF' is the SPF parameter and must have value between 1 and 26   
 - 'Top_N' is the Top_n parameter and must have value between 0 and 26   
 - 'ranking' indicates if you want to sort binding sites groups considering each point as the minumum Manhattan distance between him and the board and must be equal to "yes" or "no"    
+
+## Coverage of the ligand
+If you want to run ligand.py, you can use:  
+`python ligand.py result.pdb ligand.mol2 radius`  
+Where:  
+- 'result.pdb' is the path of the result of POCASA or PASS
+- 'ligand.mol2' is the path of the ligand
+- 'radius' is the radius used for the spheres in the result file
+For PASS we suggest a radius of 1.25, for POCASA a radius equals to the dimension of the grid used in the POCASA algorithm
