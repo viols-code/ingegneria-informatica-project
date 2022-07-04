@@ -103,8 +103,17 @@ if __name__ == '__main__':
     # ###########
     # Reads the file PDB and MOL2
     # ###########
-    ligand = reading_file_mol2(path_ligand)
-    probes = reading_file_pdb(path_result)
+    try:
+        probes = reading_file_pdb(path_result)
+    except ValueError:
+        print("The input path for the spheres is wrong")
+        exit(1)
+
+    try:
+        ligand = reading_file_mol2(path_ligand)
+    except ValueError:
+        print("The input path for the ligand is wrong")
+        exit(1)
 
     # ###########
     # Gets the atoms and spheres coordinates
