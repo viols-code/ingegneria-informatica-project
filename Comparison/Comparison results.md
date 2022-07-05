@@ -15,8 +15,8 @@ table below:
 | 1a3e   | Text          | And more                   |
 | 1a4g   | 100.00%       | 100.00%                    |
 | 1a4h   | 63.75%        | 82.50%                     |
-| 1a4m   | Text          | And more                   |
-| 1a4q   | Text          | And more                   |
+| 1a4m   | 100.00%       | 100.00%                    |
+| 1a4q   | 96.36%        | 92.73%                     |
 
 
 
