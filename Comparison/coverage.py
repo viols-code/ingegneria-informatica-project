@@ -1,4 +1,5 @@
 import math
+
 from biopandas.pdb import PandasPdb
 
 
@@ -14,7 +15,7 @@ def matrix_creation(ppdb):
     """
     Create the matrix containing the centers of the atoms with their associated element
     :param ppdb: PandasPdb
-    :return: coordinates of centers and other informations of atoms in input
+    :return: coordinates of centers and other information of atoms in input
     """
     matrix = ppdb.df['ATOM'][['x_coord', 'y_coord', 'z_coord', 'chain_id']].to_numpy()
     return matrix
@@ -47,11 +48,9 @@ if __name__ == '__main__':
         print("Insert the path of pocasa output result and the path of pass result")
         exit(1)
 
-    path1 = argv[1]
     ppdb1 = reading_file(path1)
     pass_results = matrix_creation(ppdb1)
 
-    path2 = argv[2]
     ppdb2 = reading_file(path2)
     pocasa_results = matrix_creation(ppdb2)
 
