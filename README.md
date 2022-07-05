@@ -39,6 +39,16 @@ Where:
 - 'ranking' indicates if you want to sort binding sites groups considering each point as the minumum Manhattan distance
   between him and the board and must be equal to "yes" or "no"
 
+## Tests
+In order to test the results of the two methods, two algorithms have been implemented:
+
+## Coverage of the cavities
+If you want to run coverage.py, you can use:  
+`python coverage.py result_pocasa.pdb result_pass.pdb`
+Where:
+- 'result_pocasa.pdb' is the path of the result of POCASA
+- 'result_pass.pdb' is the path of the result of PASS
+
 ## Coverage of the ligand
 If you want to run ligand.py, you can use:  
 `python ligand.py result.pdb ligand.mol2 radius`  
