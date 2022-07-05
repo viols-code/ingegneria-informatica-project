@@ -1,7 +1,9 @@
 # Comparison results
 
 ## Ligand
-The results obtained by the algorithm that calculates the coverage of the ligand for the two methods are listed in the table below:
+
+The results obtained by the algorithm that calculates the coverage of the ligand for the two methods are listed in the
+table below:
 
 | Ligand | PASS coverage | POCASA coverage - radius 4 |
 | :---:  |    :----:     |          :---:             |
@@ -21,7 +23,6 @@ The results obtained by the algorithm that calculates the coverage of the ligand
 
 ## Cavities
 The results obtained by the algorithm that calculates the coverage of the cavities for the two methods are listed in the table below:
-
 
 | Protein | POCASA(radius 3) versus PASS | POCASA(radius 3) greatest cavities versus PASS | POCASA(radius 4) versus PASS | POCASA(radius 4) greatest cavities versus PASS | PASS versus POCASA(radius 3) | PASS versus POCASA(radius 4) | 
 |:-------:|:----------------------------:|:----------------------------------------------:|:----------------------------:|:----------------------------------------------:|:----------------------------:|:----------------------------:| 
