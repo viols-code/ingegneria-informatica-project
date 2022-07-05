@@ -543,7 +543,7 @@ if __name__ == '__main__':
     # Read the file PDB
     try:
         pdb1 = reading_file(path_input)
-    except ValueError:
+    except ValueError or FileNotFoundError:
         print("The input path is wrong")
         exit(1)
 
