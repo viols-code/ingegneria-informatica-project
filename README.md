@@ -57,3 +57,9 @@ Where:
 - 'ligand.mol2' is the path of the ligand
 - 'radius' is the radius used for the spheres in the result file For PASS we suggest a radius of 1.25, for POCASA a
   radius equals to the dimension of the grid used in the POCASA algorithm
+  
+In order to run this last algorithm in authomatic, you can use the tests.py script.  
+You need a directory called 'Proteins' and in this you need a directory for each proteins.
+The name of the protein.pdb must be the name of the directory + '_pocket.pdb' and the name of the ligand must be the name of the directory + '_ligand.mol2'.
+An example is shown in the figure below:
+<img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/test.png"/>
