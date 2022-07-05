@@ -10,22 +10,13 @@ def reading_file(path):
     return ppdb
 
 
-def store_atoms(ppdb):
-    """
-    Return the protein without the hydrogen atoms
-    :param pdb: PandasPdb
-    """
-    ppdb.df['ATOM'] = ppdb.df['ATOM']
-    return ppdb
-
-
 def matrix_creation(ppdb):
     """
     Create the matrix containing the centers of the atoms with their associated element
     :param ppdb: PandasPdb
-    :return: coordinates of centers and atomic element of atoms in input
+    :return: coordinates of centers and other informations of atoms in input
     """
-    matrix = ppdb.df['ATOM'][['x_coord', 'y_coord', 'z_coord', 'element_symbol']].to_numpy()
+    matrix = ppdb.df['ATOM'][['x_coord', 'y_coord', 'z_coord', 'chain_id']].to_numpy()
     return matrix
 
 
@@ -47,21 +38,38 @@ def distance(x1, x2, y1, y2, z1, z2):
 # Entry point
 # ###########
 if __name__ == '__main__':
-    print('Pocasa results path:')
-    path1 = input()
-    ppdb1 = reading_file(path1)
-    ppdb1 = store_atoms(ppdb1)
-    pocasa_results = matrix_creation(ppdb1)
+    from sys import argv
 
-    print('Pass results path:')
-    path2 = input()
+    if len(argv) > 2:
+        path1 = argv[1]
+        path2 = argv[2]
+    else:
+        print("Insert the path of pocasa output result and the path of pass result")
+        exit(1)
+
+    path1 = argv[1]
+    ppdb1 = reading_file(path1)
+    pass_results = matrix_creation(ppdb1)
+
+    path2 = argv[2]
     ppdb2 = reading_file(path2)
-    ppdb2 = store_atoms(ppdb2)
-    pass_results = matrix_creation(ppdb2)
+    pocasa_results = matrix_creation(ppdb2)
+
+    if not path1.endswith('.pdb'):
+        print("The input path must be .pdb")
+        exit(1)
+
+    if not path2.endswith('.pdb'):
+        print("The input path must be .pdb")
+        exit(1)
 
     pocasa_touched = 0
+    pocasa_greater = 0
+    pocasa_greater_touched = 0
 
     for i in range(len(pocasa_results)):
+        if pocasa_results[i][3] == 'A':
+            pocasa_greater += 1
         point_touched = 0
         for j in range(len(pass_results)):
             if distance(pocasa_results[i][0], pass_results[j][0], pocasa_results[i][1], pass_results[j][1],
@@ -70,6 +78,8 @@ if __name__ == '__main__':
                 break
         if point_touched != 0:
             pocasa_touched += 1
+            if pocasa_results[i][3] == 'A':
+                pocasa_greater_touched += 1
 
     pass_touched = 0
 
@@ -89,5 +99,5 @@ if __name__ == '__main__':
     print(pocasa_percentage)
     print('Pass binding sites touched by Pocasa:')
     print(pass_percentage)
-
-
+    print('Pocasa greater cavities sites touched by Pass:')
+    print((pocasa_greater_touched / pocasa_greater) * 100)

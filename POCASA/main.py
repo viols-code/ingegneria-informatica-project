@@ -370,6 +370,10 @@ def fromdataframe_topdb(list1):
 if __name__ == '__main__':
     from sys import argv
 
+if len(argv) <= 6:
+    print("Insert the dimension of the grid(1 or 0.5), the path of the input(ending with .pdb), radius value(between 1 and 8), SPF value(between 0 and 27, Top_n value(between 0 and 26), Ranking value(yes or no)")
+    exit(1)
+
 # Leg dimension of the grid
 leg = argv[1]
 leg = float(leg)
@@ -391,10 +395,6 @@ Top_n = int(Top_n)
 
 # Ranking
 ranking = argv[6]
-
-if len(argv) <= 6:
-    print("Insert the dimension of the grid(1 or 0.5), the path of the input(ending with .pdb), radius value(between 1 and 8), SPF value(between 0 and 27, Top_n value(between 0 and 26), Ranking value(yes or no)")
-    exit(1)
 
 if leg != 1 and leg != 0.5:
     print("Grid dimension must be 1 or 0.5")
