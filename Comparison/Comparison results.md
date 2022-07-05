@@ -8,7 +8,7 @@ table below:
 | Ligand | PASS coverage | POCASA coverage - radius 4 |
 | :---:  |    :----:     |          :---:             |
 | 1a0q   | 74.42%        | 79.07%                     |
-| 1a0t   | Text          | And more                   |
+| 1a0t   | 97.78%        | 68.89%.                    |
 | 1a1b   | 17.95%        | 19.23%                     |
 | 1a1c   | 20.55%        | 21.92%                     |
 | 1a2c   | 54.35%        | 44.57%                     |
