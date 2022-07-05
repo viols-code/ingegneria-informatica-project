@@ -9,7 +9,7 @@ The results obtained by the algorithm that calculates the coverage of the ligand
 | 1a0t   | Text          | And more                   |
 | 1a1b   | 17.95%        | 19.23%                     |
 | 1a1c   | 20.55%        | And more                   |
-| 1a2c   | 54.35%        | And more                   |
+| 1a2c   | 54.35%        | 44.57%                     |
 | 1a4h   | 63.75%        | 82.5%                      |
 | 1a4g   | 100.0%        | And more                   |
 
