@@ -3,15 +3,15 @@
 ## Ligand
 The results obtained by the algorithm that calculates the coverage of the ligand for the two methods are listed in the table below:
 
-| Ligand | PASS coverage | POCASA coverage                       |
-| :---:  |    :----:     |          :---:                        |
-| 1a0q   | 74.42%        | radius 3Å: 76.74%     radius 4Å: 79.07% |
-| 1a0t   | Text          | And more                              |
-| 1a1b   | 17.95%        | And more                              |
-| 1a1c   | 20.55%        | And more                              |
-| 1a2c   | 54.35%        | And more                              |
-| 1a4h   | 63.75%        | And more                              |
-| 1a4g   | 100.0%        | And more                              |
+| Ligand | PASS coverage | POCASA coverage - radius 4 |
+| :---:  |    :----:     |          :---:             |
+| 1a0q   | 74.42%        | 79.07%                     |
+| 1a0t   | Text          | And more                   |
+| 1a1b   | 17.95%        | And more                   |
+| 1a1c   | 20.55%        | And more                   |
+| 1a2c   | 54.35%        | And more                   |
+| 1a4h   | 63.75%        | 82.5%                      |
+| 1a4g   | 100.0%        | And more                   |
 
 
 
