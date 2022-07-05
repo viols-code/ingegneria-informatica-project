@@ -1,4 +1,5 @@
 import math
+
 from biopandas.mol2 import PandasMol2
 from biopandas.pdb import PandasPdb
 
@@ -105,13 +106,13 @@ if __name__ == '__main__':
     # ###########
     try:
         probes = reading_file_pdb(path_result)
-    except ValueError:
+    except ValueError or FileNotFoundError:
         print("The input path for the spheres is wrong")
         exit(1)
 
     try:
         ligand = reading_file_mol2(path_ligand)
-    except ValueError:
+    except ValueError or FileNotFoundError:
         print("The input path for the ligand is wrong")
         exit(1)
 
