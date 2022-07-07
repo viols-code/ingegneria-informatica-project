@@ -2,6 +2,7 @@
 *.pdb
 *.mol2
 .DS_Store
+*.sdf
 
 #directory
 venv

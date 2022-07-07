@@ -41,11 +41,10 @@ table below:
 | 1ddm    | 17.68%        | 17.68%                              | 1.22%                       | 9.76%                       |
 | Average | 64.23%        | 80.00%                              | 41.82%                      | 78.18%                      |
 
-
-
-
 ## Cavities
-The results obtained by the algorithm that calculates the coverage of the cavities for the two methods are listed in the table below:
+
+The results obtained by the algorithm that calculates the coverage of the cavities for the two methods are listed in the
+table below:
 
 | Protein | POCASA(radius 3) versus PASS | POCASA(radius 3) greatest cavities versus PASS | POCASA(radius 4) versus PASS | POCASA(radius 4) greatest cavities versus PASS | PASS versus POCASA(radius 3) | PASS versus POCASA(radius 4) | 
 |:-------:|:----------------------------:|:----------------------------------------------:|:----------------------------:|:----------------------------------------------:|:----------------------------:|:----------------------------:| 

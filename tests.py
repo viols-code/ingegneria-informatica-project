@@ -27,38 +27,32 @@ if __name__ == '__main__':
     radius_pocasa = '1'
 
     for dirs in os.scandir('Proteins'):
+        if dirs.name == '.DS_Store':
+            continue
+
+        # Print the protein's name
+        print(dirs.name)
+
         # PASS method
-        try:
-            subprocess.call(['python', pass_file, 'Proteins/' + dirs.name + '/' + dirs.name + '_pocket.pdb',
-                             'Proteins/' + dirs.name + '/' + output_prefix_pass + dirs.name + '.pdb',
-                             'Proteins/' + dirs.name + '/' + asp + dirs.name + '.pdb', '-all'],
-                            stdout=sys.stdout)
-        except NotADirectoryError or FileNotFoundError:
-            print("An error occurred")
+        subprocess.call(['python', pass_file, 'Proteins/' + dirs.name + '/' + dirs.name + '_pocket.pdb',
+                         'Proteins/' + dirs.name + '/' + output_prefix_pass + dirs.name + '.pdb',
+                         'Proteins/' + dirs.name + '/' + asp + dirs.name + '.pdb', '-all'],
+                        stdout=sys.stdout)
 
         # POCASA method
-        try:
-            subprocess.call(['python', pocasa_file, 'Proteins/' + dirs.name + '/' + dirs.name + '_pocket.pdb',
-                             'Proteins/' + dirs.name + '/' + output_prefix_pocasa + dirs.name + '.pdb', grid_dimension, sphere_radius, spf, top_n, ranking],
-                            stdout=sys.stdout)
-        except NotADirectoryError or FileNotFoundError:
-            print("An error occurred")
+        subprocess.call(['python', pocasa_file, 'Proteins/' + dirs.name + '/' + dirs.name + '_pocket.pdb',
+                         'Proteins/' + dirs.name + '/' + output_prefix_pocasa + dirs.name + '.pdb', grid_dimension,
+                         sphere_radius, spf, top_n, ranking],
+                        stdout=sys.stdout)
 
-        print(dirs.name)
         # PASS coverage of the ligand
         print("PASS - Ligand coverage: ")
-        try:
-            subprocess.call(['python', ligand, 'Proteins/' + dirs.name + '/' + output_prefix_pass + dirs.name + '.pdb',
-                             'Proteins/' + dirs.name + '/' + dirs.name + '_ligand.mol2', radius_pass],
-                            stdout=sys.stdout)
-        except NotADirectoryError or FileNotFoundError:
-            print("An error occurred")
+        subprocess.call(['python', ligand, 'Proteins/' + dirs.name + '/' + output_prefix_pass + dirs.name + '.pdb',
+                         'Proteins/' + dirs.name + '/' + dirs.name + '_ligand.mol2', radius_pass],
+                        stdout=sys.stdout)
 
         # POCASA coverage of the ligand
         print("POCASA - Ligand coverage: ")
-        try:
-            subprocess.call(['python', ligand, 'Proteins/' + dirs.name + '/' + output_prefix_pocasa + dirs.name + '.pdb',
-                             'Proteins/' + dirs.name + '/' + dirs.name + '_ligand.mol2', radius_pocasa],
-                            stdout=sys.stdout)
-        except NotADirectoryError or FileNotFoundError:
-            print("An error occurred")
+        subprocess.call(['python', ligand, 'Proteins/' + dirs.name + '/' + output_prefix_pocasa + dirs.name + '.pdb',
+                         'Proteins/' + dirs.name + '/' + dirs.name + '_ligand.mol2', radius_pocasa],
+                        stdout=sys.stdout)
