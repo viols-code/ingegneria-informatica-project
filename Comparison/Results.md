@@ -1,8 +1,8 @@
 # Comparison results
 
-## Ligand
+## Co-crystallized ligand
 
-The results obtained by the algorithm that calculates the coverage of the ligand for the two methods are listed in the
+The results obtained by the algorithm that calculates the coverage of the co-crystallized ligand for the two methods are listed in the
 table below:
 
 | Ligand  | PASS coverage |PASS coverage without the last filter| POCASA coverage - radius 3Å | POCASA coverage - radius 4Å |
