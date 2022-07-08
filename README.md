@@ -50,12 +50,12 @@ Where:
 - 'result_pocasa.pdb' is the path of the result of POCASA
 - 'result_pass.pdb' is the path of the result of PASS
 
-## Coverage of the ligand
+## Coverage of the co-crystallized ligand
 If you want to run ligand.py, you can use:  
 `python ligand.py result.pdb ligand.mol2 radius`  
 Where:
 - 'result.pdb' is the path of the result of POCASA or PASS
-- 'ligand.mol2' is the path of the ligand
+- 'ligand.mol2' is the path of the co-crystallized ligand
 - 'radius' is the radius used for the spheres in the result file For PASS we suggest a radius of 1.25, for POCASA a
   radius equals to the dimension of the grid used in the POCASA algorithm
   
