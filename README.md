@@ -15,6 +15,8 @@ rolling probe sphere. Bioinformatics, 26(1), 46-52, (2010)
 – Brady, G.P., Stouten, P.F. Fast prediction and visualization of protein binding pockets with PASS. J Comput Aided Mol
 Des 14, 383–401 (2000)
 
+Report: https://github.com/viols-code/ingegneria-informatica-project/blob/master/Report.pdf
+
 ## PASS algorithm
 If you want to run PASS algorithm, you can use:  
 `python main.py input.pdb output.pdb asp.pdb`    
