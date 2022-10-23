@@ -19,6 +19,14 @@ Report: https://github.com/viols-code/ingegneria-informatica-project/blob/master
 
 Results: https://github.com/viols-code/ingegneria-informatica-project/blob/master/Comparison/Results.md
 
+## Example
+Protein 1a0q
+<img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/1a0q.png"/>
+PASS result
+<img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/PASS_output_1a0q.png"/>
+POCASA result
+<img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/POCASA_output_1a0q.png"/>
+
 ## PASS algorithm
 If you want to run PASS algorithm, you can use:  
 `python main.py input.pdb output.pdb asp.pdb`    
