@@ -17,6 +17,8 @@ Des 14, 383–401 (2000)
 
 Report: https://github.com/viols-code/ingegneria-informatica-project/blob/master/Report.pdf
 
+Results: https://github.com/viols-code/ingegneria-informatica-project/blob/master/Comparison/Results.md
+
 ## PASS algorithm
 If you want to run PASS algorithm, you can use:  
 `python main.py input.pdb output.pdb asp.pdb`    
