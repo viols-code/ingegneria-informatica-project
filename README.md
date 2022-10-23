@@ -21,11 +21,11 @@ Results: https://github.com/viols-code/ingegneria-informatica-project/blob/maste
 
 ## Example
 Protein 1a0q
-<img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/1a0q.png"/>
+<img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/1a0q.png" width="350"/>
 PASS result
-<img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/PASS_output_1a0q.png"/>
+<img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/PASS_output_1a0q.png" width="350"/>
 POCASA result
-<img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/POCASA_output_1a0q.png"/>
+<img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/POCASA_output_1a0q.png" width="350"/>
 
 ## PASS algorithm
 If you want to run PASS algorithm, you can use:  
