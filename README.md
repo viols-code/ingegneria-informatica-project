@@ -21,7 +21,7 @@ Results: https://github.com/viols-code/ingegneria-informatica-project/blob/maste
 
 ## Example
 | Protein 1a0q | PASS result | POCASA result |
-| :---        |    :----:   |          ---: |
+| :---:        |    :----:   |          :---: |
 | <img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/1a0q.png" width="350" alt="Protein 1a0q"/>      | <img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/PASS_output_1a0q.png" width="350" alt="PASS result"/>       | <img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/POCASA_output_1a0q.png" width="350" alt="POCASA result"/>   |
 
 ## PASS algorithm
