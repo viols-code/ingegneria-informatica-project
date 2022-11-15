@@ -4,12 +4,11 @@
 
 **Tutor:** Prof. Gianluca Palermo  
 **Area:** Architectures of computer systems  
-**Keywords:** Drug Discovery, Virtual Screening, HPC  
+**Keyword:** Drug Discovery  
 **Description:**
 The project involves the study and implementation of techniques for the manipulation of small molecules or proteins to
 support the discovery of new drugs using computer tools. In particular, the project sees the development and
-optimization of techniques known in the literature for the generation of the target pocket from a protein, to support
-the virtual screening step using HPC (High-Performance Computing) systems  
+optimization of techniques known in the literature for the generation of the target pocket from a protein. 
 – J. Yu, Y. Zhou, I. Tanaka, M. Yao, Roll: A new algorithm for the detection of protein pockets and cavities with a
 rolling probe sphere. Bioinformatics, 26(1), 46-52, (2010)  
 – Brady, G.P., Stouten, P.F. Fast prediction and visualization of protein binding pockets with PASS. J Comput Aided Mol
