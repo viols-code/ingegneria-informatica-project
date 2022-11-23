@@ -49,8 +49,9 @@ Where:
   between him and the board and must be equal to "yes" or "no"
 
 ## Tests
-In order to test the results of the two methods, two algorithms have been implemented.  
-Some results are shown here: https://github.com/viols-code/ingegneria-informatica-project/blob/master/Comparison/Results.md
+In order to test the results of the two methods, two algorithms have been implemented. 
+Code: [Comparison tests](https://github.com/viols-code/ingegneria-informatica-project/tree/master/Comparison)
+Results: [Some results](https://github.com/viols-code/ingegneria-informatica-project/blob/master/Comparison/Results.md)
 
 ## Coverage of the cavities 
 If you want to run coverage.py, you can use:    
