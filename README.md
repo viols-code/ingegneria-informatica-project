@@ -15,9 +15,9 @@ rolling probe sphere. Bioinformatics, 26(1), 46-52, (2010)
 – Brady, G.P., Stouten, P.F. Fast prediction and visualization of protein binding pockets with PASS. J Comput Aided Mol
 Des 14, 383–401 (2000)
 
-Report: https://github.com/viols-code/ingegneria-informatica-project/blob/master/Report.pdf
+Documentation: [Report](https://github.com/viols-code/ingegneria-informatica-project/blob/master/Report.pdf)
 
-Results: https://github.com/viols-code/ingegneria-informatica-project/blob/master/Comparison/Results.md
+Results: [Final results](https://github.com/viols-code/ingegneria-informatica-project/blob/master/Comparison/Results.md)
 
 ## Example
 | Protein 1a0q | PASS result | POCASA result |
