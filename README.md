@@ -21,6 +21,8 @@ Documentation: [Report](https://github.com/viols-code/ingegneria-informatica-pro
 Results: [Final results](https://github.com/viols-code/ingegneria-informatica-project/blob/master/Comparison/Results.md)
 
 ![Python](https://img.shields.io/badge/python-3776AB?logo=python&logoColor=ffdd65&style=for-the-badge&logoWidth=)
+![Pandas](https://img.shields.io/badge/pandas-3776AB?logo=pandas&style=for-the-badge&logoWidth=)
+![Numpy](https://img.shields.io/badge/numpy-3776AB?logo=numpy&style=for-the-badge&logoWidth=)
 
 ### Example
 | Protein 1a0q | PASS result | POCASA result |
