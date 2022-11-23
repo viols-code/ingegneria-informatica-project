@@ -15,16 +15,15 @@ rolling probe sphere. Bioinformatics, 26(1), 46-52, (2010)
 – Brady, G.P., Stouten, P.F. Fast prediction and visualization of protein binding pockets with PASS. J Comput Aided Mol
 Des 14, 383–401 (2000)
 
-Documentation: [Report](https://github.com/viols-code/ingegneria-informatica-project/blob/master/Report.pdf)
-
+Documentation: [Report](https://github.com/viols-code/ingegneria-informatica-project/blob/master/Report.pdf)  
 Results: [Final results](https://github.com/viols-code/ingegneria-informatica-project/blob/master/Comparison/Results.md)
 
-## Example
+### Example
 | Protein 1a0q | PASS result | POCASA result |
 | :---:        |    :----:   |          :---: |
 | <img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/1a0q.png" width="350" alt="Protein 1a0q"/>      | <img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/PASS_output_1a0q.png" width="350" alt="PASS result"/>       | <img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/POCASA_output_1a0q.png" width="350" alt="POCASA result"/>   |
 
-## PASS algorithm
+### PASS algorithm
 If you want to run PASS algorithm, you can use:  
 `python main.py input.pdb output.pdb asp.pdb`    
 Where:
@@ -35,7 +34,7 @@ Where:
 In order to have all the probe spheres founded and so eliminate the last filter, you can use:    
 `python main.py input.pdb output.pdb asp.pdb -all`
 
-## POCASA algorithm
+### POCASA algorithm
 If you want to run POCASA algorithm, you can use:  
 `python main.py input.pdb output.pdb grid_dimension radius SPF Top_N ranking`  
 Where:
@@ -53,14 +52,14 @@ In order to test the results of the two methods, two algorithms have been implem
 Code: [Comparison tests](https://github.com/viols-code/ingegneria-informatica-project/tree/master/Comparison)  
 Results: [Some results](https://github.com/viols-code/ingegneria-informatica-project/blob/master/Comparison/Results.md)  
 
-## Coverage of the cavities 
+### Coverage of the cavities 
 If you want to run coverage.py, you can use:    
 `python coverage.py result_pocasa.pdb result_pass.pdb`  
 Where:  
 - 'result_pocasa.pdb' is the path of the result of POCASA
 - 'result_pass.pdb' is the path of the result of PASS
 
-## Coverage of the co-crystallized ligand
+### Coverage of the co-crystallized ligand
 If you want to run ligand.py, you can use:  
 `python ligand.py result.pdb ligand.mol2 radius`  
 Where:
