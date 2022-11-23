@@ -2,6 +2,8 @@
 
 ## Analysis and implementation of methods for the identification of target sites within proteins to support the discovery of new drugs
 
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original-wordmark.svg" width="40"/>
+
 **Tutor:** Prof. Gianluca Palermo  
 **Area:** Architectures of computer systems  
 **Keyword:** Drug Discovery  
