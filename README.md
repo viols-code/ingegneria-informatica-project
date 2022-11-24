@@ -79,4 +79,4 @@ You need a directory called 'Proteins' and in this you need a directory for each
 The name of the protein PDB file in input must be the name of the directory + '_pocket.pdb' and the name of the ligand PDB file must be the name of the directory + '_ligand.mol2'.  
 An example is shown in the figure below:  
 
-<img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/test.png" width="20"/>
+<img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/test.png" width="100"/>
