@@ -27,7 +27,7 @@ Results: [Final results](https://github.com/viols-code/ingegneria-informatica-pr
 ### Example
 | Protein 1a0q | PASS result | POCASA result |
 | :---:        |    :----:   |          :---: |
-| <img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/1a0q.png" width="350" height="300" alt="Protein 1a0q"/>      | <img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/PASS_output_1a0q.png" width="350" height="300" alt="PASS result"/>       | <img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/POCASA_output_1a0q.png" width="350" height="300" alt="POCASA result"/>   |
+| <img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/1a0q.png" width="350" alt="Protein 1a0q"/>      | <img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/PASS_output_1a0q.png" width="350" height="300" alt="PASS result"/>       | <img src="https://github.com/viols-code/ingegneria-informatica-project/blob/master/images/POCASA_output_1a0q.png" width="350" height="300" alt="POCASA result"/>   |
 
 ### PASS algorithm
 If you want to run PASS algorithm, you can use:  
